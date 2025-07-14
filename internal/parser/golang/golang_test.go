@@ -8,6 +8,8 @@ import (
 )
 
 func TestParse(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name           string
 		dir            string
@@ -87,6 +89,8 @@ func TestParse(t *testing.T) {
 }
 
 func TestParseFile(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name           string
 		filePath       string
@@ -157,6 +161,8 @@ func TestParseFile(t *testing.T) {
 }
 
 func TestParseCommentGroup(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name           string
 		commentGroup   string
