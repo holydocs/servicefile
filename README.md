@@ -140,6 +140,34 @@ description: This is my service description
 
 I recommend `/*` style, this way `go doc` will omit these declarations.
 
+## Multiple Services in a Single Codebase
+
+ServiceFile supports documenting and extracting multiple services from a single codebase or monorepo. Each service should be defined with its own `service:name` comment block. Relationships can be attached to a specific service using the `service:{service_name}:{action}` format:
+
+```go
+/*
+service:name UserService
+description: Handles user authentication
+*/
+
+// service:UserService:uses DatabaseService
+// technology:postgres
+// description: Uses PostgreSQL for user data
+
+/*
+service:name NotificationService
+description: Handles user notifications
+*/
+
+// service:NotificationService:requests EmailService
+// technology:http
+// description: Requests email delivery
+```
+
+When you run the parser, it will generate a separate YAML file for each service (e.g., `userservice.servicefile.yaml`, `notificationservice.servicefile.yaml`).
+
+If only one service is found, the output will be a single file (e.g., `servicefile.yaml`).
+
 ## Examples
 
-See the `internal/parser/golang/testdata/` directory for complete examples of how to document services using ServiceFile comments.
+See the `internal/parser/golang/testdata/default` directory for complete examples of how to document services using ServiceFile comments.
