@@ -121,25 +121,6 @@ Each relationship can have:
 - **`description`**: Description of the relationship
 - **`technology`**: Technology used (e.g., `grpc`, `http`, `postgres`, `redis`)
 
-## Parsing Go Code
-
-### Comment Format
-
-ServiceFile parses Go comments to extract service information:
-
-```go
-/*
-service:name MyService
-description: This is my service description
-*/
-
-//service:uses DatabaseName
-//description: Uses database for data storage
-//technology:postgres
-```
-
-I recommend `/*` style, this way `go doc` will omit these declarations.
-
 ## Multiple Services in a Single Codebase
 
 ServiceFile supports documenting and extracting multiple services from a single codebase or monorepo. Each service should be defined with its own `service:name` comment block. Relationships can be attached to a specific service using the `service:{service_name}:{action}` format:
