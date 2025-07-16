@@ -58,13 +58,13 @@ func parseServiceFiles(dir string, recursive bool, output string) error {
 	}
 
 	for _, sf := range serviceFiles {
-		filepath := fmt.Sprintf("%s.%s", strings.ToLower(sf.Name), output)
+		filepath := fmt.Sprintf("%s.%s", strings.ToLower(sf.Info.Name), output)
 
 		if err := saveServiceFileToYAML(sf, filepath); err != nil {
 			return fmt.Errorf("error saving service file to %s: %w", filepath, err)
 		}
 
-		fmt.Printf("ServiceFile for '%s' generated and saved to: %s\n", sf.Name, filepath)
+		fmt.Printf("ServiceFile for '%s' generated and saved to: %s\n", sf.Info.Name, filepath)
 	}
 
 	return nil

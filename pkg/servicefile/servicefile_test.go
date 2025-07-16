@@ -22,8 +22,10 @@ func TestLoad(t *testing.T) {
 		{
 			name: "valid servicefile",
 			yamlContent: `
-name: "test-service"
-description: "A test service"
+servicefile: "0.1.0"
+info:
+    name: "test-service"
+    description: "A test service"
 relationships:
   - action: "uses"
     name: "database"
@@ -35,8 +37,11 @@ relationships:
     technology: "smtp"
 `,
 			want: &ServiceFile{
-				Name:        "test-service",
-				Description: "A test service",
+				Version: "0.1.0",
+				Info: Info{
+					Name:        "test-service",
+					Description: "A test service",
+				},
 				Relationships: []Relationship{
 					{
 						Action:      "uses",
@@ -57,19 +62,26 @@ relationships:
 		{
 			name: "minimal servicefile",
 			yamlContent: `
-name: "minimal-service"
+servicefile: 0.1.0
+info:
+    name: "minimal-service"
 `,
 			want: &ServiceFile{
-				Name:        "minimal-service",
-				Description: "",
+				Version: "0.1.0",
+				Info: Info{
+					Name:        "minimal-service",
+					Description: "",
+				},
 			},
 			wantErr: false,
 		},
 		{
 			name: "servicefile with all relationship actions",
 			yamlContent: `
-name: "complete-service"
-description: "Service with all relationship types"
+servicefile: 0.1.0
+info:
+    name: "complete-service"
+    description: "Service with all relationship types"
 relationships:
   - action: "uses"
     technology: "redis"
@@ -83,8 +95,11 @@ relationships:
     technology: "rabbitmq"
 `,
 			want: &ServiceFile{
-				Name:        "complete-service",
-				Description: "Service with all relationship types",
+				Version: "0.1.0",
+				Info: Info{
+					Name:        "complete-service",
+					Description: "Service with all relationship types",
+				},
 				Relationships: []Relationship{
 					{Action: "uses", Technology: "redis"},
 					{Action: "requests", Technology: "http"},
@@ -137,7 +152,10 @@ func TestSort(t *testing.T) {
 		{
 			name: "sort by action, name, technology, description",
 			input: &ServiceFile{
-				Name: "test-service",
+				Version: Version,
+				Info: Info{
+					Name: "test-service",
+				},
 				Relationships: []Relationship{
 					{Action: "sends", Name: "b", Technology: "kafka", Description: "second"},
 					{Action: "uses", Name: "a", Technology: "postgres", Description: "first"},
@@ -146,7 +164,10 @@ func TestSort(t *testing.T) {
 				},
 			},
 			expected: &ServiceFile{
-				Name: "test-service",
+				Version: Version,
+				Info: Info{
+					Name: "test-service",
+				},
 				Relationships: []Relationship{
 					{Action: "sends", Name: "a", Technology: "kafka", Description: "first"},
 					{Action: "sends", Name: "b", Technology: "kafka", Description: "second"},
@@ -158,24 +179,36 @@ func TestSort(t *testing.T) {
 		{
 			name: "empty relationships",
 			input: &ServiceFile{
-				Name:          "empty-service",
+				Version: Version,
+				Info: Info{
+					Name: "empty-service",
+				},
 				Relationships: []Relationship{},
 			},
 			expected: &ServiceFile{
-				Name:          "empty-service",
+				Version: Version,
+				Info: Info{
+					Name: "empty-service",
+				},
 				Relationships: []Relationship{},
 			},
 		},
 		{
 			name: "single relationship",
 			input: &ServiceFile{
-				Name: "single-service",
+				Version: Version,
+				Info: Info{
+					Name: "single-service",
+				},
 				Relationships: []Relationship{
 					{Action: "uses", Name: "database", Technology: "postgres"},
 				},
 			},
 			expected: &ServiceFile{
-				Name: "single-service",
+				Version: Version,
+				Info: Info{
+					Name: "single-service",
+				},
 				Relationships: []Relationship{
 					{Action: "uses", Name: "database", Technology: "postgres"},
 				},
@@ -186,8 +219,8 @@ func TestSort(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			inputCopy := &ServiceFile{
-				Name:          tt.input.Name,
-				Description:   tt.input.Description,
+				Version:       tt.input.Version,
+				Info:          tt.input.Info,
 				Relationships: make([]Relationship, len(tt.input.Relationships)),
 			}
 			copy(inputCopy.Relationships, tt.input.Relationships)

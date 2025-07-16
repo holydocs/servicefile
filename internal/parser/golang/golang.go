@@ -258,8 +258,11 @@ func (cp *CommentParser) buildServiceFiles() ([]*servicefile.ServiceFile, error)
 
 	for _, s := range cp.services {
 		serviceFiles[s.name] = &servicefile.ServiceFile{
-			Name:          s.name,
-			Description:   s.description,
+			Version: servicefile.Version,
+			Info: servicefile.Info{
+				Name:        s.name,
+				Description: s.description,
+			},
 			Relationships: []servicefile.Relationship{},
 		}
 	}
@@ -272,7 +275,10 @@ func (cp *CommentParser) buildServiceFiles() ([]*servicefile.ServiceFile, error)
 
 		if _, exists := serviceFiles[serviceName]; !exists {
 			serviceFiles[serviceName] = &servicefile.ServiceFile{
-				Name:          serviceName,
+				Version: servicefile.Version,
+				Info: servicefile.Info{
+					Name: serviceName,
+				},
 				Relationships: []servicefile.Relationship{},
 			}
 		}

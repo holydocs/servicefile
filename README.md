@@ -80,8 +80,10 @@ servicefile parse --output my-service.yaml
 The tool generates a `servicefile.yaml` with your service description:
 
 ```yaml
-name: UserService
-description: Handles user authentication and profile management
+servicefile: "0.1.0"
+info:
+    name: UserService
+    description: Handles user authentication and profile management
 relationships:
   - action: uses
     name: PostgreSQL

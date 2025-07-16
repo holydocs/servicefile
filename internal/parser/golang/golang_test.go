@@ -22,8 +22,11 @@ func TestParse(t *testing.T) {
 			recursive: true,
 			expectedResult: []*servicefile.ServiceFile{
 				{
-					Name:        "Example",
-					Description: "Example service for exampling stuff.",
+					Version: servicefile.Version,
+					Info: servicefile.Info{
+						Name:        "Example",
+						Description: "Example service for exampling stuff.",
+					},
 					Relationships: []servicefile.Relationship{
 						{
 							Action:      servicefile.RelationshipActionReplies,
@@ -67,8 +70,11 @@ func TestParse(t *testing.T) {
 			recursive: true,
 			expectedResult: []*servicefile.ServiceFile{
 				{
-					Name:        "auth",
-					Description: "Authentication service that handles user authentication and authorization",
+					Version: servicefile.Version,
+					Info: servicefile.Info{
+						Name:        "auth",
+						Description: "Authentication service that handles user authentication and authorization",
+					},
 					Relationships: []servicefile.Relationship{
 						{
 							Action:      servicefile.RelationshipActionReplies,
@@ -85,8 +91,11 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					Name:        "user",
-					Description: "User management service that handles user profiles and data",
+					Version: servicefile.Version,
+					Info: servicefile.Info{
+						Name:        "user",
+						Description: "User management service that handles user profiles and data",
+					},
 					Relationships: []servicefile.Relationship{
 						{
 							Action:      servicefile.RelationshipActionRequests,
@@ -103,8 +112,11 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					Name:        "notification",
-					Description: "Notification service that handles sending notifications to users",
+					Version: servicefile.Version,
+					Info: servicefile.Info{
+						Name:        "notification",
+						Description: "Notification service that handles sending notifications to users",
+					},
 					Relationships: []servicefile.Relationship{
 						{
 							Action:      servicefile.RelationshipActionRequests,
@@ -144,11 +156,11 @@ func TestParse(t *testing.T) {
 		// Compare by name
 		actualMap := make(map[string]*servicefile.ServiceFile)
 		for _, sf := range actual {
-			actualMap[sf.Name] = sf
+			actualMap[sf.Info.Name] = sf
 		}
 		expectedMap := make(map[string]*servicefile.ServiceFile)
 		for _, sf := range expected {
-			expectedMap[sf.Name] = sf
+			expectedMap[sf.Info.Name] = sf
 		}
 		return compareServiceFiles(actualMap, expectedMap)
 	}
@@ -173,10 +185,10 @@ func TestParse(t *testing.T) {
 			if !compareServiceFileSlices(result, tt.expectedResult) {
 				t.Errorf("Parse() = %+v, want %+v", result, tt.expectedResult)
 				for _, v := range result {
-					t.Logf("actual: Name=%s, Desc=%s, Rels=%+v", v.Name, v.Description, v.Relationships)
+					t.Logf("actual: Name=%s, Desc=%s, Rels=%+v", v.Info.Name, v.Info.Description, v.Relationships)
 				}
 				for _, v := range tt.expectedResult {
-					t.Logf("expected: Name=%s, Desc=%s, Rels=%+v", v.Name, v.Description, v.Relationships)
+					t.Logf("expected: Name=%s, Desc=%s, Rels=%+v", v.Info.Name, v.Info.Description, v.Relationships)
 				}
 			}
 		})
@@ -412,11 +424,11 @@ func compareServiceFiles(actual, expected map[string]*servicefile.ServiceFile) b
 			return false
 		}
 
-		if actualService.Name != expectedService.Name {
+		if actualService.Info.Name != expectedService.Info.Name {
 			return false
 		}
 
-		if actualService.Description != expectedService.Description {
+		if actualService.Info.Description != expectedService.Info.Description {
 			return false
 		}
 

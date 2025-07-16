@@ -8,14 +8,22 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const Version string = "0.1.0"
+
 // ServiceFile represents a service file.
 type ServiceFile struct {
-	Name          string         `yaml:"name"`
-	Description   string         `yaml:"description"`
+	Version       string         `yaml:"servicefile"`
+	Info          Info           `yaml:"info"`
 	Relationships []Relationship `yaml:"relationships"`
 }
 
-// Relationship represents a relationship between services.
+// Info represents a info about service.
+type Info struct {
+	Name        string `yaml:"name"`
+	Description string `yaml:"description"`
+}
+
+// Relationship represents a relationship between current service and external components.
 type Relationship struct {
 	Action      RelationshipAction `yaml:"action"`
 	Name        string             `yaml:"name,omitempty"`
