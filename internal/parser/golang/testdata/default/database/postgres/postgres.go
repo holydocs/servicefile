@@ -5,7 +5,8 @@ import "github.com/samber/do"
 /*
 service:uses PostgreSQL
 description: Stores user data and authentication tokens
-technology:postgres
+technology:postgresql
+proto:tcp
 */
 type Connection struct{}
 

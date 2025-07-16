@@ -30,7 +30,8 @@ package main
 /*
 service:uses PostgreSQL
 description: Stores user data and authentication tokens
-technology:postgres
+technology:postgresql
+proto:tcp
 */
 type UserRepository struct {
     db *sql.DB
@@ -40,7 +41,8 @@ type UserRepository struct {
 /*
 service:replies
 description: Provides user management APIs to other services
-technology:grpc
+technology:grpc-server
+proto:grpc
 */
 type UserServer struct {
     repo *UserRepository
@@ -50,7 +52,8 @@ type UserServer struct {
 /*
 service:requests NotificationService
 description: Sends user notifications via email and SMS
-technology:http
+technology:notification-service
+proto:http
 */
 type NotificationClient struct {
     httpClient *http.Client
@@ -88,14 +91,17 @@ relationships:
   - action: uses
     name: PostgreSQL
     description: Stores user data and authentication tokens
-    technology: postgres
+    technology: postgresql
+    proto: tcp
   - action: replies
     description: Provides user management APIs to other services
-    technology: grpc
+    technology: grpc-server
+    proto: grpc
   - action: requests
     name: NotificationService
     description: Sends user notifications via email and SMS
-    technology: http
+    technology: notification-service
+    proto: http
 ```
 
 ## ServiceFile Specification
@@ -123,7 +129,8 @@ Each relationship can have:
 
 - **`name`**: The name of the related service/resource
 - **`description`**: Description of the relationship
-- **`technology`**: Technology used (e.g., `grpc`, `http`, `postgres`, `redis`)
+- **`technology`**: Technology or product used (e.g., `postgresql`, `redis`, `firebase`, `kafka`)
+- **`proto`**: (Optional) Communication protocol used (e.g., `http`, `grpc`, `tcp`, `udp`, `amqp`)
 
 ## Multiple Services in a Single Codebase
 

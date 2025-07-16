@@ -32,19 +32,22 @@ func TestParse(t *testing.T) {
 							Action:      servicefile.RelationshipActionReplies,
 							Name:        "",
 							Description: "Provides user management APIs to other services",
-							Technology:  "grpc",
+							Technology:  "grpc-server",
+							Proto:       "grpc",
 						},
 						{
 							Action:      servicefile.RelationshipActionRequests,
 							Name:        "Firebase",
 							Description: "Handles push notifications",
-							Technology:  "http",
+							Technology:  "firebase",
+							Proto:       "http",
 						},
 						{
 							Action:      servicefile.RelationshipActionUses,
 							Name:        "PostgreSQL",
 							Description: "Stores user data and authentication tokens",
-							Technology:  "postgres",
+							Technology:  "postgresql",
+							Proto:       "tcp",
 						},
 					},
 				},
@@ -227,7 +230,8 @@ func TestParseFile(t *testing.T) {
 					action:      "uses",
 					targetName:  "PostgreSQL",
 					description: "Stores user data and authentication tokens",
-					technology:  "postgres",
+					technology:  "postgresql",
+					proto:       "tcp",
 				},
 			},
 			expectError: false,
@@ -311,7 +315,8 @@ system: e-commerce-platform
 			commentGroup: `/*
 service:uses PostgreSQL
 description: Stores user data and authentication tokens
-technology:postgres
+technology:postgresql
+proto:tcp
 */`,
 			expectedServices: []service{},
 			expectedRelationships: []relationship{
@@ -320,7 +325,8 @@ technology:postgres
 					action:      "uses",
 					targetName:  "PostgreSQL",
 					description: "Stores user data and authentication tokens",
-					technology:  "postgres",
+					technology:  "postgresql",
+					proto:       "tcp",
 				},
 			},
 		},
@@ -349,7 +355,8 @@ technology:postgres
 /*
 service:uses PostgreSQL
 description: Stores user data and authentication tokens
-technology:postgres
+technology:postgresql
+proto:tcp
 */`,
 			expectedServices: []service{},
 			expectedRelationships: []relationship{
@@ -358,7 +365,8 @@ technology:postgres
 					action:      "uses",
 					targetName:  "PostgreSQL",
 					description: "Stores user data and authentication tokens",
-					technology:  "postgres",
+					technology:  "postgresql",
+					proto:       "tcp",
 				},
 			},
 		},
@@ -368,7 +376,8 @@ technology:postgres
 // This struct contains all user-related fields
 // service:uses PostgreSQL
 // description: Stores user data and authentication tokens
-// technology:postgres`,
+// technology:postgresql
+// proto:tcp`,
 			expectedServices: []service{},
 			expectedRelationships: []relationship{
 				{
@@ -376,7 +385,8 @@ technology:postgres
 					action:      "uses",
 					targetName:  "PostgreSQL",
 					description: "Stores user data and authentication tokens",
-					technology:  "postgres",
+					technology:  "postgresql",
+					proto:       "tcp",
 				},
 			},
 		},
@@ -463,7 +473,8 @@ func compareServiceFiles(actual, expected map[string]*servicefile.ServiceFile) b
 				if actualRel.Action == expectedRel.Action &&
 					actualRel.Name == expectedRel.Name &&
 					actualRel.Description == expectedRel.Description &&
-					actualRel.Technology == expectedRel.Technology {
+					actualRel.Technology == expectedRel.Technology &&
+					actualRel.Proto == expectedRel.Proto {
 					found = true
 					break
 				}
@@ -516,7 +527,8 @@ func compareRelationships(actual, expected []relationship) bool {
 				actualRel.action == expectedRel.action &&
 				actualRel.targetName == expectedRel.targetName &&
 				actualRel.technology == expectedRel.technology &&
-				actualRel.description == expectedRel.description {
+				actualRel.description == expectedRel.description &&
+				actualRel.proto == expectedRel.proto {
 				found = true
 				break
 			}

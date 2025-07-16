@@ -141,6 +141,72 @@ relationships:
 			wantErr: false,
 		},
 		{
+			name: "servicefile with proto field",
+			yamlContent: `
+servicefile: 0.1.0
+info:
+    name: "api-service"
+    description: "API service with protocol specifications"
+relationships:
+  - action: "uses"
+    name: "database"
+    description: "Uses PostgreSQL database"
+    technology: "postgresql"
+    proto: "tcp"
+  - action: "requests"
+    name: "auth-service"
+    description: "Makes HTTP requests to authentication service"
+    technology: "auth-service"
+    proto: "http"
+  - action: "replies"
+    description: "Provides gRPC APIs"
+    technology: "grpc-server"
+    proto: "grpc"
+  - action: "sends"
+    name: "events"
+    description: "Sends events to message queue"
+    technology: "kafka"
+    proto: "tcp"
+`,
+			want: &ServiceFile{
+				Version: "0.1.0",
+				Info: Info{
+					Name:        "api-service",
+					Description: "API service with protocol specifications",
+				},
+				Relationships: []Relationship{
+					{
+						Action:      "uses",
+						Name:        "database",
+						Description: "Uses PostgreSQL database",
+						Technology:  "postgresql",
+						Proto:       "tcp",
+					},
+					{
+						Action:      "requests",
+						Name:        "auth-service",
+						Description: "Makes HTTP requests to authentication service",
+						Technology:  "auth-service",
+						Proto:       "http",
+					},
+					{
+						Action:      "replies",
+						Description: "Provides gRPC APIs",
+						Technology:  "grpc-server",
+						Proto:       "grpc",
+					},
+					{
+						Action:      "sends",
+						Name:        "events",
+						Description: "Sends events to message queue",
+						Technology:  "kafka",
+						Proto:       "tcp",
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
 			name:        "invalid yaml",
 			yamlContent: `name: "test" invalid: yaml: content`,
 			want:        nil,
@@ -180,17 +246,18 @@ func TestSort(t *testing.T) {
 		expected *ServiceFile
 	}{
 		{
-			name: "sort by action, name, technology, description",
+			name: "sort by action, name, technology, proto, description",
 			input: &ServiceFile{
 				Version: Version,
 				Info: Info{
 					Name: "test-service",
 				},
 				Relationships: []Relationship{
-					{Action: "sends", Name: "b", Technology: "kafka", Description: "second"},
-					{Action: "uses", Name: "a", Technology: "postgres", Description: "first"},
-					{Action: "sends", Name: "a", Technology: "kafka", Description: "first"},
-					{Action: "uses", Name: "a", Technology: "redis", Description: "first"},
+					{Action: "sends", Name: "b", Technology: "kafka", Proto: "tcp", Description: "second"},
+					{Action: "uses", Name: "a", Technology: "postgres", Proto: "tcp", Description: "first"},
+					{Action: "sends", Name: "a", Technology: "kafka", Proto: "udp", Description: "first"},
+					{Action: "uses", Name: "a", Technology: "redis", Proto: "tcp", Description: "first"},
+					{Action: "sends", Name: "a", Technology: "kafka", Proto: "tcp", Description: "first"},
 				},
 			},
 			expected: &ServiceFile{
@@ -199,10 +266,11 @@ func TestSort(t *testing.T) {
 					Name: "test-service",
 				},
 				Relationships: []Relationship{
-					{Action: "sends", Name: "a", Technology: "kafka", Description: "first"},
-					{Action: "sends", Name: "b", Technology: "kafka", Description: "second"},
-					{Action: "uses", Name: "a", Technology: "postgres", Description: "first"},
-					{Action: "uses", Name: "a", Technology: "redis", Description: "first"},
+					{Action: "sends", Name: "a", Technology: "kafka", Proto: "tcp", Description: "first"},
+					{Action: "sends", Name: "a", Technology: "kafka", Proto: "udp", Description: "first"},
+					{Action: "sends", Name: "b", Technology: "kafka", Proto: "tcp", Description: "second"},
+					{Action: "uses", Name: "a", Technology: "postgres", Proto: "tcp", Description: "first"},
+					{Action: "uses", Name: "a", Technology: "redis", Proto: "tcp", Description: "first"},
 				},
 			},
 		},

@@ -9,7 +9,8 @@ import (
 /*
 service:replies
 description: Provides user management APIs to other services
-technology:grpc
+technology:grpc-server
+proto:grpc
 */
 type Server struct {
 	svc *example.Service

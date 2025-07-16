@@ -76,14 +76,16 @@ type relationship struct {
 	targetName  string
 	technology  string
 	description string
+	proto       string
 }
 
 func (r relationship) String() string {
-	return fmt.Sprintf("service_name: %s, action: %s, target_name: %s, technology: %s, description: %s",
+	return fmt.Sprintf("service_name: %s, action: %s, target_name: %s, technology: %s, proto: %s, description: %s",
 		r.serviceName,
 		r.action,
 		r.targetName,
 		r.technology,
+		r.proto,
 		r.description,
 	)
 }
@@ -217,6 +219,12 @@ func (cp *CommentParser) parseRelationshipDefinition(lines []string) {
 				r.description = strings.TrimSpace(parts[1])
 			}
 			continue
+		case strings.HasPrefix(comment, "proto:"):
+			parts := strings.SplitN(comment, ":", 2)
+			if len(parts) == 2 {
+				r.proto = strings.TrimSpace(parts[1])
+			}
+			continue
 		}
 	}
 
@@ -305,6 +313,10 @@ func (cp *CommentParser) buildServiceFiles() ([]*servicefile.ServiceFile, error)
 
 		if r.description != "" {
 			relationship.Description = r.description
+		}
+
+		if r.proto != "" {
+			relationship.Proto = r.proto
 		}
 
 		serviceFiles[serviceName].Relationships = append(serviceFiles[serviceName].Relationships, relationship)

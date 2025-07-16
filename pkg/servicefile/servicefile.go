@@ -30,6 +30,7 @@ type Relationship struct {
 	Name        string             `yaml:"name,omitempty"`
 	Description string             `yaml:"description,omitempty"`
 	Technology  string             `yaml:"technology"`
+	Proto       string             `yaml:"proto,omitempty"`
 }
 
 // RelationshipAction represents an action between services.
@@ -59,6 +60,10 @@ func (sf *ServiceFile) Sort() {
 
 		if rel1.Technology != rel2.Technology {
 			return rel1.Technology < rel2.Technology
+		}
+
+		if rel1.Proto != rel2.Proto {
+			return rel1.Proto < rel2.Proto
 		}
 
 		return rel1.Description < rel2.Description

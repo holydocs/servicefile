@@ -5,7 +5,8 @@ import "github.com/samber/do"
 /*
 service:requests Firebase
 description: Handles push notifications
-technology:http
+technology:firebase
+proto:http
 */
 type Client struct{}
 
