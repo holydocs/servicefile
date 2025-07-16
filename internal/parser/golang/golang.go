@@ -59,12 +59,14 @@ func (cp *CommentParser) Parse(dir string, recursive bool) ([]*servicefile.Servi
 type service struct {
 	name        string
 	description string
+	system      string
 }
 
 func (s service) String() string {
-	return fmt.Sprintf("name: %s, description: %s",
+	return fmt.Sprintf("name: %s, description: %s, system: %s",
 		s.name,
 		s.description,
+		s.system,
 	)
 }
 
@@ -170,6 +172,14 @@ func (cp *CommentParser) parseServiceDefinition(lines []string) {
 			}
 			continue
 		}
+
+		if strings.HasPrefix(comment, "system:") {
+			parts := strings.SplitN(comment, ":", 2)
+			if len(parts) == 2 {
+				s.system = strings.TrimSpace(parts[1])
+			}
+			continue
+		}
 	}
 
 	if s.name != "" {
@@ -262,6 +272,7 @@ func (cp *CommentParser) buildServiceFiles() ([]*servicefile.ServiceFile, error)
 			Info: servicefile.Info{
 				Name:        s.name,
 				Description: s.description,
+				System:      s.system,
 			},
 			Relationships: []servicefile.Relationship{},
 		}

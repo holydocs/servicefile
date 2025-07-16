@@ -102,8 +102,10 @@ relationships:
 
 ### Service Metadata
 
-- **`service:name`**: The name of your service
-- **`description:`**: A description of what your service does
+- **`servicefile`**: The version of the ServiceFile specification
+- **`info.name`**: The name of your service
+- **`info.description`**: A description of what your service does
+- **`info.system`**: (Optional) The larger system or platform this service belongs to
 
 ### Relationship Actions
 

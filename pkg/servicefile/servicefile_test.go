@@ -60,6 +60,36 @@ relationships:
 			wantErr: false,
 		},
 		{
+			name: "servicefile with system",
+			yamlContent: `
+servicefile: "0.1.0"
+info:
+    name: "user-service"
+    description: "Handles user authentication and profiles"
+    system: "e-commerce-platform"
+relationships:
+  - action: "uses"
+    name: "database"
+    technology: "postgresql"
+`,
+			want: &ServiceFile{
+				Version: "0.1.0",
+				Info: Info{
+					Name:        "user-service",
+					Description: "Handles user authentication and profiles",
+					System:      "e-commerce-platform",
+				},
+				Relationships: []Relationship{
+					{
+						Action:     "uses",
+						Name:       "database",
+						Technology: "postgresql",
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
 			name: "minimal servicefile",
 			yamlContent: `
 servicefile: 0.1.0

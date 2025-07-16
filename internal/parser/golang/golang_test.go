@@ -291,6 +291,22 @@ description: Example service for exampling stuff.
 			expectedRelationships: []relationship{},
 		},
 		{
+			name: "parse service name, description, and system",
+			commentGroup: `/*
+service:name UserService
+description: Handles user authentication and profiles
+system: e-commerce-platform
+*/`,
+			expectedServices: []service{
+				{
+					name:        "UserService",
+					description: "Handles user authentication and profiles",
+					system:      "e-commerce-platform",
+				},
+			},
+			expectedRelationships: []relationship{},
+		},
+		{
 			name: "parse relationship with all fields",
 			commentGroup: `/*
 service:uses PostgreSQL
@@ -432,6 +448,10 @@ func compareServiceFiles(actual, expected map[string]*servicefile.ServiceFile) b
 			return false
 		}
 
+		if actualService.Info.System != expectedService.Info.System {
+			return false
+		}
+
 		if len(actualService.Relationships) != len(expectedService.Relationships) {
 			return false
 		}
@@ -468,7 +488,8 @@ func compareServices(actual, expected []service) bool {
 		found := false
 		for _, actualService := range actual {
 			if actualService.name == expectedService.name &&
-				actualService.description == expectedService.description {
+				actualService.description == expectedService.description &&
+				actualService.system == expectedService.system {
 				found = true
 				break
 			}
