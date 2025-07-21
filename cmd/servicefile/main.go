@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/denchenko/servicefile/internal/api/cli"
+	"github.com/holydocs/servicefile/internal/api/cli"
 )
 
 func main() {

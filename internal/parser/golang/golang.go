@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/denchenko/servicefile/pkg/servicefile"
+	"github.com/holydocs/servicefile/pkg/servicefile"
 )
 
 type CommentParser struct {

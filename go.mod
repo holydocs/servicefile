@@ -1,4 +1,4 @@
-module github.com/denchenko/servicefile
+module github.com/holydocs/servicefile
 
 go 1.23.10
 

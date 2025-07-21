@@ -1,8 +1,8 @@
 # ServiceFile
 
-[![Run Tests](https://github.com/denchenko/servicefile/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/denchenko/servicefile/actions/workflows/go.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/denchenko/servicefile)](https://goreportcard.com/report/github.com/denchenko/servicefile)
-[![GoDoc](https://godoc.org/github.com/denchenko/servicefile?status.svg)](https://godoc.org/github.com/denchenko/servicefile)
+[![Run Tests](https://github.com/holydocs/servicefile/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/holydocs/servicefile/actions/workflows/go.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/holydocs/servicefile)](https://goreportcard.com/report/github.com/holydocs/servicefile)
+[![GoDoc](https://godoc.org/github.com/holydocs/servicefile?status.svg)](https://godoc.org/github.com/holydocs/servicefile)
 
 A standardized approach to describing microservices and their relationships through structured specification file and automated parsing tools.
 
@@ -10,7 +10,7 @@ A standardized approach to describing microservices and their relationships thro
 
 ```bash
 # Install directly with Go
-go install github.com/denchenko/servicefile/cmd/servicefile@latest
+go install github.com/holydocs/servicefile/cmd/servicefile@latest
 ```
 
 ## Quick Start

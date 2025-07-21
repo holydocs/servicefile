@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/denchenko/servicefile/examples/do/api/grpc"
-	"github.com/denchenko/servicefile/examples/do/client/firebase"
-	"github.com/denchenko/servicefile/examples/do/database/postgres"
-	"github.com/denchenko/servicefile/examples/do/service/example"
+	"github.com/holydocs/servicefile/examples/do/api/grpc"
+	"github.com/holydocs/servicefile/examples/do/client/firebase"
+	"github.com/holydocs/servicefile/examples/do/database/postgres"
+	"github.com/holydocs/servicefile/examples/do/service/example"
 	"github.com/samber/do"
 )
 

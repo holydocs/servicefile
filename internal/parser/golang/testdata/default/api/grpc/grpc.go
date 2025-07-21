@@ -3,7 +3,7 @@ package grpc
 import (
 	"github.com/samber/do"
 
-	"github.com/denchenko/servicefile/examples/do/service/example"
+	"github.com/holydocs/servicefile/examples/do/service/example"
 )
 
 /*

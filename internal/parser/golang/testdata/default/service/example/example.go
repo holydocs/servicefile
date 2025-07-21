@@ -5,8 +5,8 @@ import (
 
 	"github.com/samber/do"
 
-	"github.com/denchenko/servicefile/examples/do/client/firebase"
-	"github.com/denchenko/servicefile/examples/do/database/postgres"
+	"github.com/holydocs/servicefile/examples/do/client/firebase"
+	"github.com/holydocs/servicefile/examples/do/database/postgres"
 )
 
 /*

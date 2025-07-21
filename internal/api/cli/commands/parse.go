@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/denchenko/servicefile/internal/parser/golang"
-	"github.com/denchenko/servicefile/pkg/servicefile"
+	"github.com/holydocs/servicefile/internal/parser/golang"
+	"github.com/holydocs/servicefile/pkg/servicefile"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )

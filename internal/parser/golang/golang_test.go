@@ -3,7 +3,7 @@ package golang
 import (
 	"testing"
 
-	"github.com/denchenko/servicefile/pkg/servicefile"
+	"github.com/holydocs/servicefile/pkg/servicefile"
 )
 
 func TestParse(t *testing.T) {

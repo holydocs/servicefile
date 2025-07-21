@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"github.com/denchenko/servicefile/internal/api/cli/commands"
+	"github.com/holydocs/servicefile/internal/api/cli/commands"
 	"github.com/spf13/cobra"
 )
 

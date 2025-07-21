@@ -1,4 +1,4 @@
-module github.com/denchenko/servicefile/examples/do
+module github.com/holydocs/servicefile/examples/do
 
 go 1.23.10
 
