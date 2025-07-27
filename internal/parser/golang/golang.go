@@ -74,6 +74,7 @@ type service struct {
 	system      string
 	owner       string
 	repository  string
+	tags        []string
 }
 
 func (s service) String() string {
@@ -208,6 +209,22 @@ func (cp *CommentParser) parseServiceDefinition(lines []string) {
 			}
 			continue
 		}
+
+		if strings.HasPrefix(comment, "tags:") {
+			parts := strings.SplitN(comment, ":", 2)
+			if len(parts) == 2 {
+				tagsStr := strings.TrimSpace(parts[1])
+				if tagsStr != "" {
+					// Split tags by comma and trim whitespace
+					tags := strings.Split(tagsStr, ",")
+					for i, tag := range tags {
+						tags[i] = strings.TrimSpace(tag)
+					}
+					s.tags = tags
+				}
+			}
+			continue
+		}
 	}
 
 	if s.name != "" {
@@ -309,6 +326,7 @@ func (cp *CommentParser) buildServiceFiles() ([]*servicefile.ServiceFile, error)
 				System:      s.system,
 				Owner:       s.owner,
 				Repository:  s.repository,
+				Tags:        s.tags,
 			},
 			Relationships: []servicefile.Relationship{},
 		}

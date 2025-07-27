@@ -24,6 +24,7 @@ Add structured comments to your Go code to describe your service:
 service:name UserService
 description: Handles user authentication and profile management
 owner: team-auth
+tags: auth, user-management, microservice
 */
 package main
 
@@ -89,6 +90,10 @@ info:
     name: UserService
     description: Handles user authentication and profile management
     owner: team-auth
+    tags:
+        - auth
+        - user-management
+        - microservice
 relationships:
   - action: uses
     name: PostgreSQL
@@ -116,6 +121,7 @@ relationships:
 - **`info.system`**: (Optional) The larger system or platform this service belongs to
 - **`info.owner`**: (Optional) The team or individual responsible for this service
 - **`info.repository`**: (Optional) The URL of repository
+- **`info.tags`**: (Optional) A list of tags to categorize and organize your service
 
 ### Relationship Actions
 
@@ -144,6 +150,7 @@ ServiceFile supports documenting and extracting multiple services from a single 
 /*
 service:name UserService
 description: Handles user authentication
+tags: auth, user-management
 */
 
 // service:UserService:uses DatabaseService
@@ -153,6 +160,7 @@ description: Handles user authentication
 /*
 service:name NotificationService
 description: Handles user notifications
+tags: notification, messaging
 */
 
 // service:NotificationService:requests EmailService

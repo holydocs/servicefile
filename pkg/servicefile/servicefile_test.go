@@ -237,6 +237,36 @@ relationships:
 			wantErr: false,
 		},
 		{
+			name: "servicefile with tags",
+			yamlContent: `
+servicefile: 0.1.0
+info:
+    name: "tagged-service"
+    description: "A service with tags"
+    tags: ["auth", "user-management", "microservice"]
+relationships:
+  - action: "uses"
+    name: "database"
+    technology: "postgresql"
+`,
+			want: &ServiceFile{
+				Version: "0.1.0",
+				Info: Info{
+					Name:        "tagged-service",
+					Description: "A service with tags",
+					Tags:        []string{"auth", "user-management", "microservice"},
+				},
+				Relationships: []Relationship{
+					{
+						Action:     "uses",
+						Name:       "database",
+						Technology: "postgresql",
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
 			name:        "invalid yaml",
 			yamlContent: `name: "test" invalid: yaml: content`,
 			want:        nil,

@@ -19,11 +19,12 @@ type ServiceFile struct {
 
 // Info represents a info about service.
 type Info struct {
-	Name        string `yaml:"name"`
-	Description string `yaml:"description"`
-	System      string `yaml:"system,omitempty"`
-	Owner       string `yaml:"owner,omitempty"`
-	Repository  string `yaml:"repository,omitempty"`
+	Name        string   `yaml:"name"`
+	Description string   `yaml:"description"`
+	System      string   `yaml:"system,omitempty"`
+	Owner       string   `yaml:"owner,omitempty"`
+	Repository  string   `yaml:"repository,omitempty"`
+	Tags        []string `yaml:"tags,omitempty"`
 }
 
 // Relationship represents a relationship between current service and external components.

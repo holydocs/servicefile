@@ -288,6 +288,7 @@ description: Handles user authentication and profiles
 system: e-commerce-platform
 owner: team-auth
 repository: https://github.com/holydocs/servicefile
+tags: auth, user-management, microservice
 */`,
 			expectedServices: []service{
 				{
@@ -296,6 +297,7 @@ repository: https://github.com/holydocs/servicefile
 					system:      "e-commerce-platform",
 					owner:       "team-auth",
 					repository:  "https://github.com/holydocs/servicefile",
+					tags:        []string{"auth", "user-management", "microservice"},
 				},
 			},
 			expectedRelationships: []relationship{},
@@ -466,6 +468,18 @@ func compareServiceFiles(actual, expected map[string]*servicefile.ServiceFile) b
 			return false
 		}
 
+		if actualService.Info.Owner != expectedService.Info.Owner {
+			return false
+		}
+
+		if actualService.Info.Repository != expectedService.Info.Repository {
+			return false
+		}
+
+		if !compareStringSlices(actualService.Info.Tags, expectedService.Info.Tags) {
+			return false
+		}
+
 		if len(actualService.Relationships) != len(expectedService.Relationships) {
 			return false
 		}
@@ -492,6 +506,38 @@ func compareServiceFiles(actual, expected map[string]*servicefile.ServiceFile) b
 	return true
 }
 
+// compareStringSlices compares two string slices for equality
+func compareStringSlices(actual, expected []string) bool {
+	if len(actual) != len(expected) {
+		return false
+	}
+
+	// Create maps for O(1) lookup
+	actualMap := make(map[string]bool)
+	expectedMap := make(map[string]bool)
+
+	for _, s := range actual {
+		actualMap[s] = true
+	}
+
+	for _, s := range expected {
+		expectedMap[s] = true
+	}
+
+	// Compare maps
+	if len(actualMap) != len(expectedMap) {
+		return false
+	}
+
+	for s := range actualMap {
+		if !expectedMap[s] {
+			return false
+		}
+	}
+
+	return true
+}
+
 // compareServices compares two service slices for equality
 func compareServices(actual, expected []service) bool {
 	if len(actual) != len(expected) {
@@ -504,7 +550,10 @@ func compareServices(actual, expected []service) bool {
 		for _, actualService := range actual {
 			if actualService.name == expectedService.name &&
 				actualService.description == expectedService.description &&
-				actualService.system == expectedService.system {
+				actualService.system == expectedService.system &&
+				actualService.owner == expectedService.owner &&
+				actualService.repository == expectedService.repository &&
+				compareStringSlices(actualService.tags, expectedService.tags) {
 				found = true
 				break
 			}
