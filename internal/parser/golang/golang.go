@@ -60,13 +60,15 @@ type service struct {
 	name        string
 	description string
 	system      string
+	owner       string
 }
 
 func (s service) String() string {
-	return fmt.Sprintf("name: %s, description: %s, system: %s",
+	return fmt.Sprintf("name: %s, description: %s, system: %s, owner: %s",
 		s.name,
 		s.description,
 		s.system,
+		s.owner,
 	)
 }
 
@@ -182,6 +184,14 @@ func (cp *CommentParser) parseServiceDefinition(lines []string) {
 			}
 			continue
 		}
+
+		if strings.HasPrefix(comment, "owner:") {
+			parts := strings.SplitN(comment, ":", 2)
+			if len(parts) == 2 {
+				s.owner = strings.TrimSpace(parts[1])
+			}
+			continue
+		}
 	}
 
 	if s.name != "" {
@@ -281,6 +291,7 @@ func (cp *CommentParser) buildServiceFiles() ([]*servicefile.ServiceFile, error)
 				Name:        s.name,
 				Description: s.description,
 				System:      s.system,
+				Owner:       s.owner,
 			},
 			Relationships: []servicefile.Relationship{},
 		}

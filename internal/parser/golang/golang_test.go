@@ -311,6 +311,24 @@ system: e-commerce-platform
 			expectedRelationships: []relationship{},
 		},
 		{
+			name: "parse service name, description, system, and owner",
+			commentGroup: `/*
+service:name UserService
+description: Handles user authentication and profiles
+system: e-commerce-platform
+owner: team-auth
+*/`,
+			expectedServices: []service{
+				{
+					name:        "UserService",
+					description: "Handles user authentication and profiles",
+					system:      "e-commerce-platform",
+					owner:       "team-auth",
+				},
+			},
+			expectedRelationships: []relationship{},
+		},
+		{
 			name: "parse relationship with all fields",
 			commentGroup: `/*
 service:uses PostgreSQL
@@ -344,6 +362,20 @@ proto:tcp
 				{
 					name:        "Example",
 					description: "Example service for exampling stuff.",
+				},
+			},
+			expectedRelationships: []relationship{},
+		},
+		{
+			name: "parse comments starting with // including owner",
+			commentGroup: `// service:name Example
+// description: Example service for exampling stuff.
+// owner: team-example`,
+			expectedServices: []service{
+				{
+					name:        "Example",
+					description: "Example service for exampling stuff.",
+					owner:       "team-example",
 				},
 			},
 			expectedRelationships: []relationship{},

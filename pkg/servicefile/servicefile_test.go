@@ -90,6 +90,36 @@ relationships:
 			wantErr: false,
 		},
 		{
+			name: "servicefile with owner",
+			yamlContent: `
+servicefile: "0.1.0"
+info:
+    name: "user-service"
+    description: "Handles user authentication and profiles"
+    owner: "team-auth"
+relationships:
+  - action: "uses"
+    name: "database"
+    technology: "postgresql"
+`,
+			want: &ServiceFile{
+				Version: "0.1.0",
+				Info: Info{
+					Name:        "user-service",
+					Description: "Handles user authentication and profiles",
+					Owner:       "team-auth",
+				},
+				Relationships: []Relationship{
+					{
+						Action:     "uses",
+						Name:       "database",
+						Technology: "postgresql",
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
 			name: "minimal servicefile",
 			yamlContent: `
 servicefile: 0.1.0

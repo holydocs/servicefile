@@ -23,6 +23,7 @@ Add structured comments to your Go code to describe your service:
 /*
 service:name UserService
 description: Handles user authentication and profile management
+owner: team-auth
 */
 package main
 
@@ -87,6 +88,7 @@ servicefile: "0.1.0"
 info:
     name: UserService
     description: Handles user authentication and profile management
+    owner: team-auth
 relationships:
   - action: uses
     name: PostgreSQL
@@ -112,6 +114,7 @@ relationships:
 - **`info.name`**: The name of your service
 - **`info.description`**: A description of what your service does
 - **`info.system`**: (Optional) The larger system or platform this service belongs to
+- **`info.owner`**: (Optional) The team or individual responsible for this service
 
 ### Relationship Actions
 
