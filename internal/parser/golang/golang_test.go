@@ -171,7 +171,7 @@ func TestParse(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			parser := NewCommentParser()
-			result, err := parser.Parse(tt.dir, tt.recursive)
+			result, err := parser.Parse(tt.dir, tt.recursive, false)
 
 			if tt.expectError {
 				if err == nil {
@@ -281,42 +281,13 @@ func TestParseCommentGroup(t *testing.T) {
 		expectedRelationships []relationship
 	}{
 		{
-			name: "parse service name and description",
-			commentGroup: `/*
-service:name Example
-description: Example service for exampling stuff.
-*/`,
-			expectedServices: []service{
-				{
-					name:        "Example",
-					description: "Example service for exampling stuff.",
-				},
-			},
-			expectedRelationships: []relationship{},
-		},
-		{
-			name: "parse service name, description, and system",
-			commentGroup: `/*
-service:name UserService
-description: Handles user authentication and profiles
-system: e-commerce-platform
-*/`,
-			expectedServices: []service{
-				{
-					name:        "UserService",
-					description: "Handles user authentication and profiles",
-					system:      "e-commerce-platform",
-				},
-			},
-			expectedRelationships: []relationship{},
-		},
-		{
-			name: "parse service name, description, system, and owner",
+			name: "parse service info with all fields",
 			commentGroup: `/*
 service:name UserService
 description: Handles user authentication and profiles
 system: e-commerce-platform
 owner: team-auth
+repository: https://github.com/holydocs/servicefile
 */`,
 			expectedServices: []service{
 				{
@@ -324,6 +295,7 @@ owner: team-auth
 					description: "Handles user authentication and profiles",
 					system:      "e-commerce-platform",
 					owner:       "team-auth",
+					repository:  "https://github.com/holydocs/servicefile",
 				},
 			},
 			expectedRelationships: []relationship{},
@@ -571,4 +543,49 @@ func compareRelationships(actual, expected []relationship) bool {
 	}
 
 	return true
+}
+
+func TestMakeGitRepositoryURL(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "git@github.com format",
+			input:    "git@github.com:holydocs/servicefile.git",
+			expected: "https://github.com/holydocs/servicefile",
+		},
+		{
+			name:     "https://github.com format with .git suffix",
+			input:    "https://github.com/holydocs/servicefile.git",
+			expected: "https://github.com/holydocs/servicefile",
+		},
+		{
+			name:     "http://github.com format with .git suffix",
+			input:    "http://github.com/holydocs/servicefile.git",
+			expected: "http://github.com/holydocs/servicefile",
+		},
+		{
+			name:     "complex nested path",
+			input:    "git@github.com:org/team/subteam/project.git",
+			expected: "https://github.com/org/team/subteam/project",
+		},
+		{
+			name:     "with multiple dots in path",
+			input:    "git@github.com:user/my-project.v2.git",
+			expected: "https://github.com/user/my-project.v2",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := makeGitRepositoryURL(tt.input)
+			if result != tt.expected {
+				t.Errorf("makeGitRepositoryURL(%q) = %q, want %q", tt.input, result, tt.expected)
+			}
+		})
+	}
 }

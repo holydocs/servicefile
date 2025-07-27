@@ -13,30 +13,32 @@ import (
 
 func Parse() *cobra.Command {
 	var (
-		dir       string
-		recursive bool
-		output    string
+		dir              string
+		recursive        bool
+		output           string
+		detectRepository bool
 	)
 
 	cmd := &cobra.Command{
 		Use:   "parse",
 		Short: "Parse servicefiles from source",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			return parseServiceFiles(dir, recursive, output)
+			return parseServiceFiles(dir, recursive, output, detectRepository)
 		},
 	}
 
 	cmd.Flags().StringVarP(&dir, "dir", "d", ".", "Directory to analyze")
 	cmd.Flags().BoolVarP(&recursive, "recursive", "r", true, "Recursively analyze subdirectories")
 	cmd.Flags().StringVarP(&output, "output", "o", "servicefile.yaml", "Output file path suffix for YAML")
+	cmd.Flags().BoolVar(&detectRepository, "detect-repository", true, "Automatically detect repository URL from git")
 
 	return cmd
 }
 
-func parseServiceFiles(dir string, recursive bool, output string) error {
+func parseServiceFiles(dir string, recursive bool, output string, detectRepository bool) error {
 	parser := golang.NewCommentParser()
 
-	serviceFiles, err := parser.Parse(dir, recursive)
+	serviceFiles, err := parser.Parse(dir, recursive, detectRepository)
 	if err != nil {
 		return fmt.Errorf("error parsing service file: %w", err)
 	}

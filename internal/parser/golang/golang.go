@@ -6,6 +6,7 @@ import (
 	"go/parser"
 	"go/token"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -24,7 +25,7 @@ func NewCommentParser() *CommentParser {
 	}
 }
 
-func (cp *CommentParser) Parse(dir string, recursive bool) ([]*servicefile.ServiceFile, error) {
+func (cp *CommentParser) Parse(dir string, recursive bool, detectRepository bool) ([]*servicefile.ServiceFile, error) {
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return fmt.Errorf("failed to walk the path: %w", err)
@@ -53,7 +54,18 @@ func (cp *CommentParser) Parse(dir string, recursive bool) ([]*servicefile.Servi
 		return nil, fmt.Errorf("error walking the path: %w", err)
 	}
 
-	return cp.buildServiceFiles()
+	serviceFiles, err := cp.buildServiceFiles()
+	if err != nil {
+		return nil, err
+	}
+
+	if detectRepository && isEmptyRepository(serviceFiles) {
+		if err := cp.fillRepository(dir, serviceFiles); err != nil {
+			return nil, fmt.Errorf("error detecting repositories: %w", err)
+		}
+	}
+
+	return serviceFiles, nil
 }
 
 type service struct {
@@ -61,15 +73,11 @@ type service struct {
 	description string
 	system      string
 	owner       string
+	repository  string
 }
 
 func (s service) String() string {
-	return fmt.Sprintf("name: %s, description: %s, system: %s, owner: %s",
-		s.name,
-		s.description,
-		s.system,
-		s.owner,
-	)
+	return fmt.Sprintf("name: %s, description: %s", s.name, s.description)
 }
 
 type relationship struct {
@@ -192,6 +200,14 @@ func (cp *CommentParser) parseServiceDefinition(lines []string) {
 			}
 			continue
 		}
+
+		if strings.HasPrefix(comment, "repository:") {
+			parts := strings.SplitN(comment, ":", 2)
+			if len(parts) == 2 {
+				s.repository = strings.TrimSpace(parts[1])
+			}
+			continue
+		}
 	}
 
 	if s.name != "" {
@@ -292,6 +308,7 @@ func (cp *CommentParser) buildServiceFiles() ([]*servicefile.ServiceFile, error)
 				Description: s.description,
 				System:      s.system,
 				Owner:       s.owner,
+				Repository:  s.repository,
 			},
 			Relationships: []servicefile.Relationship{},
 		}
@@ -377,4 +394,60 @@ func (cp *CommentParser) determineServiceName(r relationship, serviceFiles map[s
 	}
 
 	return "", fmt.Errorf("no service name found for relationship: %s", r)
+}
+
+func isEmptyRepository(serviceFiles []*servicefile.ServiceFile) bool {
+	for _, sf := range serviceFiles {
+		if sf.Info.Repository == "" {
+			return true
+		}
+	}
+	return false
+}
+
+func (cp *CommentParser) fillRepository(dir string, serviceFiles []*servicefile.ServiceFile) error {
+	repoURL, err := detectGitRepository(dir)
+	if err != nil {
+		fmt.Printf("Couldn't detect git repository: %v\n", err.Error())
+		return nil
+	}
+
+	for _, sf := range serviceFiles {
+		if sf.Info.Repository == "" {
+			sf.Info.Repository = repoURL
+		}
+	}
+
+	return nil
+}
+
+func detectGitRepository(dir string) (string, error) {
+	cmd := exec.Command("git", "config", "--get", "remote.origin.url")
+	cmd.Dir = dir
+	output, err := cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("failed to get git remote URL: %w", err)
+	}
+
+	url := strings.TrimSpace(string(output))
+	if url == "" {
+		return "", nil
+	}
+
+	return makeGitRepositoryURL(url), nil
+}
+
+func makeGitRepositoryURL(url string) string {
+	if strings.HasPrefix(url, "git@") {
+		url = strings.TrimPrefix(url, "git@")
+
+		parts := strings.SplitN(url, ":", 2)
+		if len(parts) == 2 {
+			url = "https://" + parts[0] + "/" + parts[1]
+		}
+	}
+
+	url = strings.TrimSuffix(url, ".git")
+
+	return url
 }
