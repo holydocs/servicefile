@@ -115,6 +115,7 @@ relationships:
 - **`info.description`**: A description of what your service does
 - **`info.system`**: (Optional) The larger system or platform this service belongs to
 - **`info.owner`**: (Optional) The team or individual responsible for this service
+- **`info.repository`**: (Optional) The URL of repository
 
 ### Relationship Actions
 
