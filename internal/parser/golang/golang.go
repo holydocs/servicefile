@@ -89,16 +89,14 @@ type relationship struct {
 	description string
 	proto       string
 	tags        []string
+	external    bool
 }
 
 func (r relationship) String() string {
-	return fmt.Sprintf("service_name: %s, action: %s, target_name: %s, technology: %s, proto: %s, description: %s",
+	return fmt.Sprintf("service_name: %s, action: %s, target_name: %s",
 		r.serviceName,
 		r.action,
 		r.targetName,
-		r.technology,
-		r.proto,
-		r.description,
 	)
 }
 
@@ -282,6 +280,13 @@ func (cp *CommentParser) parseRelationshipDefinition(lines []string) {
 				}
 			}
 			continue
+		case strings.HasPrefix(comment, "external:"):
+			parts := strings.SplitN(comment, ":", 2)
+			if len(parts) == 2 {
+				externalStr := strings.TrimSpace(parts[1])
+				r.external = externalStr == "true" || externalStr == "yes" || externalStr == "1"
+			}
+			continue
 		}
 	}
 
@@ -381,6 +386,10 @@ func (cp *CommentParser) buildServiceFiles() ([]*servicefile.ServiceFile, error)
 
 		if len(r.tags) > 0 {
 			relationship.Tags = r.tags
+		}
+
+		if r.external {
+			relationship.External = r.external
 		}
 
 		serviceFiles[serviceName].Relationships = append(serviceFiles[serviceName].Relationships, relationship)

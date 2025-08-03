@@ -329,6 +329,50 @@ relationships:
 			wantErr: false,
 		},
 		{
+			name: "servicefile with external relationships",
+			yamlContent: `
+servicefile: "0.1.0"
+info:
+    name: "external-service"
+    description: "A service with external relationships"
+relationships:
+  - action: "requests"
+    name: "ExternalAPI"
+    description: "Requests data from external third-party API"
+    technology: "http"
+    external: true
+  - action: "uses"
+    name: "InternalDatabase"
+    description: "Uses internal database"
+    technology: "postgresql"
+    external: false
+`,
+			want: &ServiceFile{
+				Version: "0.1.0",
+				Info: Info{
+					Name:        "external-service",
+					Description: "A service with external relationships",
+				},
+				Relationships: []Relationship{
+					{
+						Action:      "requests",
+						Name:        "ExternalAPI",
+						Description: "Requests data from external third-party API",
+						Technology:  "http",
+						External:    true,
+					},
+					{
+						Action:      "uses",
+						Name:        "InternalDatabase",
+						Description: "Uses internal database",
+						Technology:  "postgresql",
+						External:    false,
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
 			name:        "invalid yaml",
 			yamlContent: `name: "test" invalid: yaml: content`,
 			want:        nil,

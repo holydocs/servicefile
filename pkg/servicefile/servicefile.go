@@ -35,6 +35,7 @@ type Relationship struct {
 	Technology  string             `yaml:"technology"`
 	Proto       string             `yaml:"proto,omitempty"`
 	Tags        []string           `yaml:"tags,omitempty"`
+	External    bool               `yaml:"external,omitempty"`
 }
 
 // RelationshipAction represents an action between services.

@@ -140,6 +140,7 @@ Each relationship can have:
 - **`name`**: The name of the related service/resource
 - **`description`**: Description of the relationship
 - **`technology`**: Technology or product used (e.g., `postgresql`, `redis`, `firebase`, `kafka`)
+- **`external`**: (Optional) Whether this is an external dependency (e.g., `true`, `false`)
 - **`proto`**: (Optional) Communication protocol used (e.g., `http`, `grpc`, `tcp`, `udp`, `amqp`)
 - **`tags`**: (Optional) A list of tags to categorize and organize the relationship (e.g., `persistence`, `security`, `critical`)
 
