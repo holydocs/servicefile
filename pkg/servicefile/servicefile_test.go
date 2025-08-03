@@ -267,6 +267,68 @@ relationships:
 			wantErr: false,
 		},
 		{
+			name: "servicefile with relationship tags",
+			yamlContent: `
+servicefile: 0.1.0
+info:
+    name: "relationship-tagged-service"
+    description: "A service with tagged relationships"
+relationships:
+  - action: "uses"
+    name: "database"
+    description: "Uses PostgreSQL database"
+    technology: "postgresql"
+    proto: "tcp"
+    tags: ["persistence", "data-store", "critical"]
+  - action: "requests"
+    name: "auth-service"
+    description: "Makes HTTP requests to authentication service"
+    technology: "auth-service"
+    proto: "http"
+    tags: ["security", "authentication"]
+  - action: "sends"
+    name: "events"
+    description: "Sends events to message queue"
+    technology: "kafka"
+    proto: "tcp"
+    tags: ["messaging", "async"]
+`,
+			want: &ServiceFile{
+				Version: "0.1.0",
+				Info: Info{
+					Name:        "relationship-tagged-service",
+					Description: "A service with tagged relationships",
+				},
+				Relationships: []Relationship{
+					{
+						Action:      "uses",
+						Name:        "database",
+						Description: "Uses PostgreSQL database",
+						Technology:  "postgresql",
+						Proto:       "tcp",
+						Tags:        []string{"persistence", "data-store", "critical"},
+					},
+					{
+						Action:      "requests",
+						Name:        "auth-service",
+						Description: "Makes HTTP requests to authentication service",
+						Technology:  "auth-service",
+						Proto:       "http",
+						Tags:        []string{"security", "authentication"},
+					},
+					{
+						Action:      "sends",
+						Name:        "events",
+						Description: "Sends events to message queue",
+						Technology:  "kafka",
+						Proto:       "tcp",
+						Tags:        []string{"messaging", "async"},
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
 			name:        "invalid yaml",
 			yamlContent: `name: "test" invalid: yaml: content`,
 			want:        nil,

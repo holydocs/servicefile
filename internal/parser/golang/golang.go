@@ -88,6 +88,7 @@ type relationship struct {
 	technology  string
 	description string
 	proto       string
+	tags        []string
 }
 
 func (r relationship) String() string {
@@ -268,6 +269,19 @@ func (cp *CommentParser) parseRelationshipDefinition(lines []string) {
 				r.proto = strings.TrimSpace(parts[1])
 			}
 			continue
+		case strings.HasPrefix(comment, "tags:"):
+			parts := strings.SplitN(comment, ":", 2)
+			if len(parts) == 2 {
+				tagsStr := strings.TrimSpace(parts[1])
+				if tagsStr != "" {
+					tags := strings.Split(tagsStr, ",")
+					for i, tag := range tags {
+						tags[i] = strings.TrimSpace(tag)
+					}
+					r.tags = tags
+				}
+			}
+			continue
 		}
 	}
 
@@ -363,6 +377,10 @@ func (cp *CommentParser) buildServiceFiles() ([]*servicefile.ServiceFile, error)
 
 		if r.proto != "" {
 			relationship.Proto = r.proto
+		}
+
+		if len(r.tags) > 0 {
+			relationship.Tags = r.tags
 		}
 
 		serviceFiles[serviceName].Relationships = append(serviceFiles[serviceName].Relationships, relationship)

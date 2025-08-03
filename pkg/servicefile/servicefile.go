@@ -34,6 +34,7 @@ type Relationship struct {
 	Description string             `yaml:"description,omitempty"`
 	Technology  string             `yaml:"technology"`
 	Proto       string             `yaml:"proto,omitempty"`
+	Tags        []string           `yaml:"tags,omitempty"`
 }
 
 // RelationshipAction represents an action between services.

@@ -141,6 +141,7 @@ Each relationship can have:
 - **`description`**: Description of the relationship
 - **`technology`**: Technology or product used (e.g., `postgresql`, `redis`, `firebase`, `kafka`)
 - **`proto`**: (Optional) Communication protocol used (e.g., `http`, `grpc`, `tcp`, `udp`, `amqp`)
+- **`tags`**: (Optional) A list of tags to categorize and organize the relationship (e.g., `persistence`, `security`, `critical`)
 
 ## Multiple Services in a Single Codebase
 
@@ -156,6 +157,7 @@ tags: auth, user-management
 // service:UserService:uses DatabaseService
 // technology:postgres
 // description: Uses PostgreSQL for user data
+// tags:persistence, critical
 
 /*
 service:name NotificationService
@@ -166,6 +168,7 @@ tags: notification, messaging
 // service:NotificationService:requests EmailService
 // technology:http
 // description: Requests email delivery
+// tags:external, email
 ```
 
 When you run the parser, it will generate a separate YAML file for each service (e.g., `userservice.servicefile.yaml`, `notificationservice.servicefile.yaml`).
