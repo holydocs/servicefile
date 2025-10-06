@@ -28,11 +28,11 @@ info:
     description: "A test service"
 relationships:
   - action: "uses"
-    name: "database"
+    participant: "database"
     description: "Uses PostgreSQL database"
     technology: "postgresql"
   - action: "sends"
-    name: "notifications"
+    participant: "notifications"
     description: "Sends email notifications"
     technology: "smtp"
 `,
@@ -45,13 +45,13 @@ relationships:
 				Relationships: []Relationship{
 					{
 						Action:      "uses",
-						Name:        "database",
+						Participant: "database",
 						Description: "Uses PostgreSQL database",
 						Technology:  "postgresql",
 					},
 					{
 						Action:      "sends",
-						Name:        "notifications",
+						Participant: "notifications",
 						Description: "Sends email notifications",
 						Technology:  "smtp",
 					},
@@ -69,7 +69,7 @@ info:
     system: "e-commerce-platform"
 relationships:
   - action: "uses"
-    name: "database"
+    participant: "database"
     technology: "postgresql"
 `,
 			want: &ServiceFile{
@@ -81,9 +81,9 @@ relationships:
 				},
 				Relationships: []Relationship{
 					{
-						Action:     "uses",
-						Name:       "database",
-						Technology: "postgresql",
+						Action:      "uses",
+						Participant: "database",
+						Technology:  "postgresql",
 					},
 				},
 			},
@@ -99,7 +99,7 @@ info:
     owner: "team-auth"
 relationships:
   - action: "uses"
-    name: "database"
+    participant: "database"
     technology: "postgresql"
 `,
 			want: &ServiceFile{
@@ -111,9 +111,9 @@ relationships:
 				},
 				Relationships: []Relationship{
 					{
-						Action:     "uses",
-						Name:       "database",
-						Technology: "postgresql",
+						Action:      "uses",
+						Participant: "database",
+						Technology:  "postgresql",
 					},
 				},
 			},
@@ -179,12 +179,12 @@ info:
     description: "API service with protocol specifications"
 relationships:
   - action: "uses"
-    name: "database"
+    participant: "database"
     description: "Uses PostgreSQL database"
     technology: "postgresql"
     proto: "tcp"
   - action: "requests"
-    name: "auth-service"
+    participant: "auth-service"
     description: "Makes HTTP requests to authentication service"
     technology: "auth-service"
     proto: "http"
@@ -193,7 +193,7 @@ relationships:
     technology: "grpc-server"
     proto: "grpc"
   - action: "sends"
-    name: "events"
+    participant: "events"
     description: "Sends events to message queue"
     technology: "kafka"
     proto: "tcp"
@@ -207,14 +207,14 @@ relationships:
 				Relationships: []Relationship{
 					{
 						Action:      "uses",
-						Name:        "database",
+						Participant: "database",
 						Description: "Uses PostgreSQL database",
 						Technology:  "postgresql",
 						Proto:       "tcp",
 					},
 					{
 						Action:      "requests",
-						Name:        "auth-service",
+						Participant: "auth-service",
 						Description: "Makes HTTP requests to authentication service",
 						Technology:  "auth-service",
 						Proto:       "http",
@@ -227,7 +227,7 @@ relationships:
 					},
 					{
 						Action:      "sends",
-						Name:        "events",
+						Participant: "events",
 						Description: "Sends events to message queue",
 						Technology:  "kafka",
 						Proto:       "tcp",
@@ -246,7 +246,7 @@ info:
     tags: ["auth", "user-management", "microservice"]
 relationships:
   - action: "uses"
-    name: "database"
+    participant: "database"
     technology: "postgresql"
 `,
 			want: &ServiceFile{
@@ -258,9 +258,9 @@ relationships:
 				},
 				Relationships: []Relationship{
 					{
-						Action:     "uses",
-						Name:       "database",
-						Technology: "postgresql",
+						Action:      "uses",
+						Participant: "database",
+						Technology:  "postgresql",
 					},
 				},
 			},
@@ -275,19 +275,19 @@ info:
     description: "A service with tagged relationships"
 relationships:
   - action: "uses"
-    name: "database"
+    participant: "database"
     description: "Uses PostgreSQL database"
     technology: "postgresql"
     proto: "tcp"
     tags: ["persistence", "data-store", "critical"]
   - action: "requests"
-    name: "auth-service"
+    participant: "auth-service"
     description: "Makes HTTP requests to authentication service"
     technology: "auth-service"
     proto: "http"
     tags: ["security", "authentication"]
   - action: "sends"
-    name: "events"
+    participant: "events"
     description: "Sends events to message queue"
     technology: "kafka"
     proto: "tcp"
@@ -302,7 +302,7 @@ relationships:
 				Relationships: []Relationship{
 					{
 						Action:      "uses",
-						Name:        "database",
+						Participant: "database",
 						Description: "Uses PostgreSQL database",
 						Technology:  "postgresql",
 						Proto:       "tcp",
@@ -310,7 +310,7 @@ relationships:
 					},
 					{
 						Action:      "requests",
-						Name:        "auth-service",
+						Participant: "auth-service",
 						Description: "Makes HTTP requests to authentication service",
 						Technology:  "auth-service",
 						Proto:       "http",
@@ -318,7 +318,7 @@ relationships:
 					},
 					{
 						Action:      "sends",
-						Name:        "events",
+						Participant: "events",
 						Description: "Sends events to message queue",
 						Technology:  "kafka",
 						Proto:       "tcp",
@@ -337,12 +337,12 @@ info:
     description: "A service with external relationships"
 relationships:
   - action: "requests"
-    name: "ExternalAPI"
+    participant: "ExternalAPI"
     description: "Requests data from external third-party API"
     technology: "http"
     external: true
   - action: "uses"
-    name: "InternalDatabase"
+    participant: "InternalDatabase"
     description: "Uses internal database"
     technology: "postgresql"
     external: false
@@ -356,14 +356,14 @@ relationships:
 				Relationships: []Relationship{
 					{
 						Action:      "requests",
-						Name:        "ExternalAPI",
+						Participant: "ExternalAPI",
 						Description: "Requests data from external third-party API",
 						Technology:  "http",
 						External:    true,
 					},
 					{
 						Action:      "uses",
-						Name:        "InternalDatabase",
+						Participant: "InternalDatabase",
 						Description: "Uses internal database",
 						Technology:  "postgresql",
 						External:    false,
@@ -381,17 +381,17 @@ info:
     description: "A service that replies to people"
 relationships:
   - action: "replies"
-    name: "User"
+    participant: "User"
     description: "Replies to user requests via web interface"
     technology: "http"
     person: true
   - action: "replies"
-    name: "Admin"
+    participant: "Admin"
     description: "Replies to admin requests via API"
     technology: "grpc"
     person: true
   - action: "replies"
-    name: "OtherService"
+    participant: "OtherService"
     description: "Replies to other service requests"
     technology: "grpc"
     person: false
@@ -405,21 +405,21 @@ relationships:
 				Relationships: []Relationship{
 					{
 						Action:      "replies",
-						Name:        "User",
+						Participant: "User",
 						Description: "Replies to user requests via web interface",
 						Technology:  "http",
 						Person:      true,
 					},
 					{
 						Action:      "replies",
-						Name:        "Admin",
+						Participant: "Admin",
 						Description: "Replies to admin requests via API",
 						Technology:  "grpc",
 						Person:      true,
 					},
 					{
 						Action:      "replies",
-						Name:        "OtherService",
+						Participant: "OtherService",
 						Description: "Replies to other service requests",
 						Technology:  "grpc",
 						Person:      false,
@@ -475,11 +475,11 @@ func TestSort(t *testing.T) {
 					Name: "test-service",
 				},
 				Relationships: []Relationship{
-					{Action: "sends", Name: "b", Technology: "kafka", Proto: "tcp", Description: "second"},
-					{Action: "uses", Name: "a", Technology: "postgres", Proto: "tcp", Description: "first"},
-					{Action: "sends", Name: "a", Technology: "kafka", Proto: "udp", Description: "first"},
-					{Action: "uses", Name: "a", Technology: "redis", Proto: "tcp", Description: "first"},
-					{Action: "sends", Name: "a", Technology: "kafka", Proto: "tcp", Description: "first"},
+					{Action: "sends", Participant: "b", Technology: "kafka", Proto: "tcp", Description: "second"},
+					{Action: "uses", Participant: "a", Technology: "postgres", Proto: "tcp", Description: "first"},
+					{Action: "sends", Participant: "a", Technology: "kafka", Proto: "udp", Description: "first"},
+					{Action: "uses", Participant: "a", Technology: "redis", Proto: "tcp", Description: "first"},
+					{Action: "sends", Participant: "a", Technology: "kafka", Proto: "tcp", Description: "first"},
 				},
 			},
 			expected: &ServiceFile{
@@ -488,11 +488,11 @@ func TestSort(t *testing.T) {
 					Name: "test-service",
 				},
 				Relationships: []Relationship{
-					{Action: "sends", Name: "a", Technology: "kafka", Proto: "tcp", Description: "first"},
-					{Action: "sends", Name: "a", Technology: "kafka", Proto: "udp", Description: "first"},
-					{Action: "sends", Name: "b", Technology: "kafka", Proto: "tcp", Description: "second"},
-					{Action: "uses", Name: "a", Technology: "postgres", Proto: "tcp", Description: "first"},
-					{Action: "uses", Name: "a", Technology: "redis", Proto: "tcp", Description: "first"},
+					{Action: "sends", Participant: "a", Technology: "kafka", Proto: "tcp", Description: "first"},
+					{Action: "sends", Participant: "a", Technology: "kafka", Proto: "udp", Description: "first"},
+					{Action: "sends", Participant: "b", Technology: "kafka", Proto: "tcp", Description: "second"},
+					{Action: "uses", Participant: "a", Technology: "postgres", Proto: "tcp", Description: "first"},
+					{Action: "uses", Participant: "a", Technology: "redis", Proto: "tcp", Description: "first"},
 				},
 			},
 		},
@@ -521,7 +521,7 @@ func TestSort(t *testing.T) {
 					Name: "single-service",
 				},
 				Relationships: []Relationship{
-					{Action: "uses", Name: "database", Technology: "postgres"},
+					{Action: "uses", Participant: "database", Technology: "postgres"},
 				},
 			},
 			expected: &ServiceFile{
@@ -530,7 +530,7 @@ func TestSort(t *testing.T) {
 					Name: "single-service",
 				},
 				Relationships: []Relationship{
-					{Action: "uses", Name: "database", Technology: "postgres"},
+					{Action: "uses", Participant: "database", Technology: "postgres"},
 				},
 			},
 		},

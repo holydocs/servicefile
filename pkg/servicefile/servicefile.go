@@ -30,7 +30,7 @@ type Info struct {
 // Relationship represents a relationship between current service and external components.
 type Relationship struct {
 	Action      RelationshipAction `yaml:"action"`
-	Name        string             `yaml:"name,omitempty"`
+	Participant string             `yaml:"participant,omitempty"`
 	Description string             `yaml:"description,omitempty"`
 	Technology  string             `yaml:"technology"`
 	Proto       string             `yaml:"proto,omitempty"`
@@ -60,8 +60,8 @@ func (sf *ServiceFile) Sort() {
 			return string(rel1.Action) < string(rel2.Action)
 		}
 
-		if rel1.Name != rel2.Name {
-			return rel1.Name < rel2.Name
+		if rel1.Participant != rel2.Participant {
+			return rel1.Participant < rel2.Participant
 		}
 
 		if rel1.Technology != rel2.Technology {

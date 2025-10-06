@@ -108,7 +108,7 @@ info:
         - microservice
 relationships:
   - action: uses
-    name: PostgreSQL
+    participant: PostgreSQL
     description: Stores user data and authentication tokens
     technology: postgresql
     proto: tcp
@@ -117,12 +117,12 @@ relationships:
     technology: grpc-server
     proto: grpc
   - action: requests
-    name: NotificationService
+    participant: NotificationService
     description: Sends user notifications via email and SMS
     technology: notification-service
     proto: http
   - action: replies
-    name: User
+    participant: User
     description: Provides web interface for user interactions
     technology: http-server
     proto: http
@@ -147,7 +147,7 @@ ServiceFile supports several relationship types:
 
 - **`service:uses`**: Service depends on another service/database
 - **`service:requests`**: Service makes requests to another service
-- **`service:replies`**: Service provides APIs for other services
+- **`service:replies`**: Service provides APIs for other services/persons
 - **`service:sends`**: Service sends messages/events
 - **`service:receives`**: Service receives messages/events
 
@@ -155,7 +155,7 @@ ServiceFile supports several relationship types:
 
 Each relationship can have:
 
-- **`name`**: The name of the related service/resource
+- **`participant`**: The name of the related service/resource
 - **`description`**: Description of the relationship
 - **`technology`**: Technology or product used (e.g., `postgresql`, `redis`, `firebase`, `kafka`)
 - **`external`**: (Optional) Whether this is an external dependency (e.g., `true`, `false`)

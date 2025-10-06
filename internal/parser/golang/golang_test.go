@@ -30,21 +30,21 @@ func TestParse(t *testing.T) {
 					Relationships: []servicefile.Relationship{
 						{
 							Action:      servicefile.RelationshipActionReplies,
-							Name:        "",
+							Participant: "",
 							Description: "Provides user management APIs to other services",
 							Technology:  "grpc-server",
 							Proto:       "grpc",
 						},
 						{
 							Action:      servicefile.RelationshipActionRequests,
-							Name:        "Firebase",
+							Participant: "Firebase",
 							Description: "Handles push notifications",
 							Technology:  "firebase",
 							Proto:       "http",
 						},
 						{
 							Action:      servicefile.RelationshipActionUses,
-							Name:        "PostgreSQL",
+							Participant: "PostgreSQL",
 							Description: "Stores user data and authentication tokens",
 							Technology:  "postgresql",
 							Proto:       "tcp",
@@ -81,13 +81,13 @@ func TestParse(t *testing.T) {
 					Relationships: []servicefile.Relationship{
 						{
 							Action:      servicefile.RelationshipActionReplies,
-							Name:        "user",
+							Participant: "user",
 							Description: "Provides authentication responses to user service",
 							Technology:  "jwt",
 						},
 						{
 							Action:      servicefile.RelationshipActionReplies,
-							Name:        "notification",
+							Participant: "notification",
 							Description: "Provides authentication status to notification service",
 							Technology:  "grpc",
 						},
@@ -102,13 +102,13 @@ func TestParse(t *testing.T) {
 					Relationships: []servicefile.Relationship{
 						{
 							Action:      servicefile.RelationshipActionRequests,
-							Name:        "auth",
+							Participant: "auth",
 							Description: "Requests authentication from auth service",
 							Technology:  "jwt",
 						},
 						{
 							Action:      servicefile.RelationshipActionSends,
-							Name:        "notification",
+							Participant: "notification",
 							Description: "Sends user events to notification service",
 							Technology:  "grpc",
 						},
@@ -123,13 +123,13 @@ func TestParse(t *testing.T) {
 					Relationships: []servicefile.Relationship{
 						{
 							Action:      servicefile.RelationshipActionRequests,
-							Name:        "auth",
+							Participant: "auth",
 							Description: "Requests authentication status from auth service",
 							Technology:  "grpc",
 						},
 						{
 							Action:      servicefile.RelationshipActionReceives,
-							Name:        "user",
+							Participant: "user",
 							Description: "Receives user events from user service",
 							Technology:  "grpc",
 						},
@@ -529,7 +529,7 @@ func compareServiceFiles(actual, expected map[string]*servicefile.ServiceFile) b
 			found := false
 			for _, actualRel := range actualService.Relationships {
 				if actualRel.Action == expectedRel.Action &&
-					actualRel.Name == expectedRel.Name &&
+					actualRel.Participant == expectedRel.Participant &&
 					actualRel.Description == expectedRel.Description &&
 					actualRel.Technology == expectedRel.Technology &&
 					actualRel.Proto == expectedRel.Proto &&

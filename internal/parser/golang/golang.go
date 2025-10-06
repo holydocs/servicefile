@@ -376,8 +376,8 @@ func (cp *CommentParser) buildServiceFiles() ([]*servicefile.ServiceFile, error)
 		}
 
 		relationship := servicefile.Relationship{
-			Action: servicefile.RelationshipAction(r.action),
-			Name:   r.targetName,
+			Action:      servicefile.RelationshipAction(r.action),
+			Participant: r.targetName,
 		}
 
 		if r.technology != "" {
