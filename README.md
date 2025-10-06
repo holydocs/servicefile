@@ -60,6 +60,18 @@ proto:http
 type NotificationClient struct {
     httpClient *http.Client
 }
+
+// Service that replies to user requests
+/*
+service:replies User
+description: Provides web interface for user interactions
+technology:http-server
+proto:http
+person:true
+*/
+type WebServer struct {
+    router *gin.Engine
+}
 ```
 
 ### 2. Parse Your Service
@@ -109,6 +121,12 @@ relationships:
     description: Sends user notifications via email and SMS
     technology: notification-service
     proto: http
+  - action: replies
+    name: User
+    description: Provides web interface for user interactions
+    technology: http-server
+    proto: http
+    person: true
 ```
 
 ## ServiceFile Specification
@@ -141,6 +159,7 @@ Each relationship can have:
 - **`description`**: Description of the relationship
 - **`technology`**: Technology or product used (e.g., `postgresql`, `redis`, `firebase`, `kafka`)
 - **`external`**: (Optional) Whether this is an external dependency (e.g., `true`, `false`)
+- **`person`**: (Optional) Whether this relationship is with a person rather than a service or system (e.g., `true`, `false`)
 - **`proto`**: (Optional) Communication protocol used (e.g., `http`, `grpc`, `tcp`, `udp`, `amqp`)
 - **`tags`**: (Optional) A list of tags to categorize and organize the relationship (e.g., `persistence`, `security`, `critical`)
 
@@ -170,6 +189,17 @@ tags: notification, messaging
 // technology:http
 // description: Requests email delivery
 // tags:external, email
+
+/*
+service:name WebService
+description: Handles web interface and user interactions
+tags: web, frontend
+*/
+
+// service:WebService:replies User
+// technology:http
+// description: Provides web interface to users
+// person:true
 ```
 
 When you run the parser, it will generate a separate YAML file for each service (e.g., `userservice.servicefile.yaml`, `notificationservice.servicefile.yaml`).

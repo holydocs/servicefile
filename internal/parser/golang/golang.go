@@ -90,6 +90,7 @@ type relationship struct {
 	proto       string
 	tags        []string
 	external    bool
+	person      bool
 }
 
 func (r relationship) String() string {
@@ -287,6 +288,13 @@ func (cp *CommentParser) parseRelationshipDefinition(lines []string) {
 				r.external = externalStr == "true" || externalStr == "yes" || externalStr == "1"
 			}
 			continue
+		case strings.HasPrefix(comment, "person:"):
+			parts := strings.SplitN(comment, ":", 2)
+			if len(parts) == 2 {
+				personStr := strings.TrimSpace(parts[1])
+				r.person = personStr == "true" || personStr == "yes" || personStr == "1"
+			}
+			continue
 		}
 	}
 
@@ -390,6 +398,10 @@ func (cp *CommentParser) buildServiceFiles() ([]*servicefile.ServiceFile, error)
 
 		if r.external {
 			relationship.External = r.external
+		}
+
+		if r.person {
+			relationship.Person = r.person
 		}
 
 		serviceFiles[serviceName].Relationships = append(serviceFiles[serviceName].Relationships, relationship)

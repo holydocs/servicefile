@@ -36,6 +36,7 @@ type Relationship struct {
 	Proto       string             `yaml:"proto,omitempty"`
 	Tags        []string           `yaml:"tags,omitempty"`
 	External    bool               `yaml:"external,omitempty"`
+	Person      bool               `yaml:"person,omitempty"`
 }
 
 // RelationshipAction represents an action between services.

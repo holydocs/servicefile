@@ -373,6 +373,62 @@ relationships:
 			wantErr: false,
 		},
 		{
+			name: "servicefile with person relationships",
+			yamlContent: `
+servicefile: "0.1.0"
+info:
+    name: "user-service"
+    description: "A service that replies to people"
+relationships:
+  - action: "replies"
+    name: "User"
+    description: "Replies to user requests via web interface"
+    technology: "http"
+    person: true
+  - action: "replies"
+    name: "Admin"
+    description: "Replies to admin requests via API"
+    technology: "grpc"
+    person: true
+  - action: "replies"
+    name: "OtherService"
+    description: "Replies to other service requests"
+    technology: "grpc"
+    person: false
+`,
+			want: &ServiceFile{
+				Version: "0.1.0",
+				Info: Info{
+					Name:        "user-service",
+					Description: "A service that replies to people",
+				},
+				Relationships: []Relationship{
+					{
+						Action:      "replies",
+						Name:        "User",
+						Description: "Replies to user requests via web interface",
+						Technology:  "http",
+						Person:      true,
+					},
+					{
+						Action:      "replies",
+						Name:        "Admin",
+						Description: "Replies to admin requests via API",
+						Technology:  "grpc",
+						Person:      true,
+					},
+					{
+						Action:      "replies",
+						Name:        "OtherService",
+						Description: "Replies to other service requests",
+						Technology:  "grpc",
+						Person:      false,
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
 			name:        "invalid yaml",
 			yamlContent: `name: "test" invalid: yaml: content`,
 			want:        nil,

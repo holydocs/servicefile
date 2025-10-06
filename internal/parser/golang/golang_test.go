@@ -323,6 +323,46 @@ proto:tcp
 			},
 		},
 		{
+			name: "parse relationship with person attribute",
+			commentGroup: `/*
+service:replies User
+description: Replies to user requests via web interface
+technology:http
+person:true
+*/`,
+			expectedServices: []service{},
+			expectedRelationships: []relationship{
+				{
+					serviceName: "",
+					action:      "replies",
+					targetName:  "User",
+					description: "Replies to user requests via web interface",
+					technology:  "http",
+					person:      true,
+				},
+			},
+		},
+		{
+			name: "parse relationship with person attribute false",
+			commentGroup: `/*
+service:replies OtherService
+description: Replies to other service requests
+technology:grpc
+person:false
+*/`,
+			expectedServices: []service{},
+			expectedRelationships: []relationship{
+				{
+					serviceName: "",
+					action:      "replies",
+					targetName:  "OtherService",
+					description: "Replies to other service requests",
+					technology:  "grpc",
+					person:      false,
+				},
+			},
+		},
+		{
 			name:                  "parse empty comment group",
 			commentGroup:          `/* */`,
 			expectedServices:      []service{},
@@ -492,7 +532,9 @@ func compareServiceFiles(actual, expected map[string]*servicefile.ServiceFile) b
 					actualRel.Name == expectedRel.Name &&
 					actualRel.Description == expectedRel.Description &&
 					actualRel.Technology == expectedRel.Technology &&
-					actualRel.Proto == expectedRel.Proto {
+					actualRel.Proto == expectedRel.Proto &&
+					actualRel.External == expectedRel.External &&
+					actualRel.Person == expectedRel.Person {
 					found = true
 					break
 				}
@@ -581,7 +623,9 @@ func compareRelationships(actual, expected []relationship) bool {
 				actualRel.targetName == expectedRel.targetName &&
 				actualRel.technology == expectedRel.technology &&
 				actualRel.description == expectedRel.description &&
-				actualRel.proto == expectedRel.proto {
+				actualRel.proto == expectedRel.proto &&
+				actualRel.external == expectedRel.external &&
+				actualRel.person == expectedRel.person {
 				found = true
 				break
 			}
