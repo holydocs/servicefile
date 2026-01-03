@@ -25,7 +25,7 @@ func NewCommentParser() *CommentParser {
 	}
 }
 
-func (cp *CommentParser) Parse(dir string, recursive bool, detectRepository bool) ([]*servicefile.ServiceFile, error) {
+func (cp *CommentParser) Parse(dir string, recursive bool, detectRepository bool, analyzeGoMod bool) ([]*servicefile.ServiceFile, error) {
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return fmt.Errorf("failed to walk the path: %w", err)
@@ -65,6 +65,12 @@ func (cp *CommentParser) Parse(dir string, recursive bool, detectRepository bool
 		}
 	}
 
+	if analyzeGoMod {
+		if err := cp.enrichWithGoModDependencies(dir, serviceFiles); err != nil {
+			return nil, fmt.Errorf("error analyzing go.mod dependencies: %w", err)
+		}
+	}
+
 	return serviceFiles, nil
 }
 
@@ -75,6 +81,7 @@ type service struct {
 	owner       string
 	repository  string
 	tags        []string
+	definedIn   string
 }
 
 func (s service) String() string {
@@ -91,6 +98,7 @@ type relationship struct {
 	tags        []string
 	external    bool
 	person      bool
+	definedIn   string
 }
 
 func (r relationship) String() string {
@@ -115,7 +123,7 @@ func (cp *CommentParser) parseFile(path string) error {
 			commentText.WriteString(c.Text)
 			commentText.WriteString("\n")
 		}
-		cp.parseCommentGroup(commentText.String())
+		cp.parseCommentGroup(commentText.String(), path)
 	}
 
 	ast.Inspect(f, func(n ast.Node) bool {
@@ -133,7 +141,7 @@ func (cp *CommentParser) parseFile(path string) error {
 			commentText.WriteString(c.Text)
 			commentText.WriteString("\n")
 		}
-		cp.parseCommentGroup(commentText.String())
+		cp.parseCommentGroup(commentText.String(), path)
 
 		return true
 	})
@@ -141,7 +149,7 @@ func (cp *CommentParser) parseFile(path string) error {
 	return nil
 }
 
-func (cp *CommentParser) parseCommentGroup(commentGroup string) {
+func (cp *CommentParser) parseCommentGroup(commentGroup string, definedIn string) {
 	if !strings.Contains(commentGroup, "service:") {
 		return
 	}
@@ -150,13 +158,13 @@ func (cp *CommentParser) parseCommentGroup(commentGroup string) {
 
 	switch {
 	case strings.Contains(commentGroup, "service:name"):
-		cp.parseServiceDefinition(lines)
+		cp.parseServiceDefinition(lines, definedIn)
 	default:
-		cp.parseRelationshipDefinition(lines)
+		cp.parseRelationshipDefinition(lines, definedIn)
 	}
 }
 
-func (cp *CommentParser) parseServiceDefinition(lines []string) {
+func (cp *CommentParser) parseServiceDefinition(lines []string, definedIn string) {
 	var s service
 
 	for _, line := range lines {
@@ -228,11 +236,12 @@ func (cp *CommentParser) parseServiceDefinition(lines []string) {
 	}
 
 	if s.name != "" {
+		s.definedIn = definedIn
 		cp.services = append(cp.services, s)
 	}
 }
 
-func (cp *CommentParser) parseRelationshipDefinition(lines []string) {
+func (cp *CommentParser) parseRelationshipDefinition(lines []string, definedIn string) {
 	var r relationship
 
 	for _, line := range lines {
@@ -299,6 +308,7 @@ func (cp *CommentParser) parseRelationshipDefinition(lines []string) {
 	}
 
 	if r.action != "" {
+		r.definedIn = definedIn
 		cp.relationships = append(cp.relationships, r)
 	}
 }

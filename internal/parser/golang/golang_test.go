@@ -13,13 +13,15 @@ func TestParse(t *testing.T) {
 		name           string
 		dir            string
 		recursive      bool
+		analyzeGoMod   bool
 		expectedResult []*servicefile.ServiceFile
 		expectError    bool
 	}{
 		{
-			name:      "parse default example service",
-			dir:       "testdata/default",
-			recursive: true,
+			name:         "parse default example service",
+			dir:          "testdata/default",
+			recursive:    true,
+			analyzeGoMod: false,
 			expectedResult: []*servicefile.ServiceFile{
 				{
 					Version: servicefile.Version,
@@ -55,22 +57,25 @@ func TestParse(t *testing.T) {
 			expectError: false,
 		},
 		{
-			name:        "parse non-existent directory",
-			dir:         "testdata/nonexistent",
-			recursive:   true,
-			expectError: true,
+			name:         "parse non-existent directory",
+			dir:          "testdata/nonexistent",
+			recursive:    true,
+			analyzeGoMod: false,
+			expectError:  true,
 		},
 		{
 			name:           "parse directory with no go files",
 			dir:            "testdata",
 			recursive:      false,
+			analyzeGoMod:   false,
 			expectError:    true,
 			expectedResult: []*servicefile.ServiceFile{},
 		},
 		{
-			name:      "parse explicit service relationships",
-			dir:       "testdata/explicit",
-			recursive: true,
+			name:         "parse explicit service relationships",
+			dir:          "testdata/explicit",
+			recursive:    true,
+			analyzeGoMod: false,
 			expectedResult: []*servicefile.ServiceFile{
 				{
 					Version: servicefile.Version,
@@ -139,16 +144,175 @@ func TestParse(t *testing.T) {
 			expectError: false,
 		},
 		{
-			name:        "parse mixed service relationships",
-			dir:         "testdata/mixed",
-			recursive:   true,
-			expectError: true,
+			name:         "parse mixed service relationships",
+			dir:          "testdata/mixed",
+			recursive:    true,
+			analyzeGoMod: false,
+			expectError:  true,
 		},
 		{
-			name:        "parse mixed service relationships with error message",
-			dir:         "testdata/mixed",
-			recursive:   true,
-			expectError: true,
+			name:         "parse mixed service relationships with error message",
+			dir:          "testdata/mixed",
+			recursive:    true,
+			analyzeGoMod: false,
+			expectError:  true,
+		},
+		{
+			name:         "parse multiservice with two go.mod files (nearest-parent per service)",
+			dir:          "testdata/multigomod",
+			recursive:    true,
+			analyzeGoMod: true,
+			expectedResult: []*servicefile.ServiceFile{
+				{
+					Version: servicefile.Version,
+					Info: servicefile.Info{
+						Name:        "ServiceA",
+						Description: "Service A in module A.",
+					},
+					Relationships: []servicefile.Relationship{
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "PostgreSQL",
+							Description: "",
+							Technology:  "postgresql",
+							Proto:       "tcp",
+						},
+					},
+				},
+				{
+					Version: servicefile.Version,
+					Info: servicefile.Info{
+						Name:        "ServiceB",
+						Description: "Service B in module B.",
+					},
+					Relationships: []servicefile.Relationship{
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "Redis",
+							Description: "",
+							Technology:  "redis",
+							Proto:       "tcp",
+						},
+					},
+				},
+			},
+			expectError: false,
+		},
+		{
+			name:         "parse infers PostgreSQL relationship from go.mod (pgx)",
+			dir:          "testdata/gomod",
+			recursive:    true,
+			analyzeGoMod: true,
+			expectedResult: []*servicefile.ServiceFile{
+				{
+					Version: servicefile.Version,
+					Info: servicefile.Info{
+						Name:        "ExampleGoMod",
+						Description: "Example service that should infer dependencies from go.mod.",
+					},
+					Relationships: []servicefile.Relationship{
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "PostgreSQL",
+							Description: "Database for storing something.",
+							Technology:  "PostgreSQL",
+							Proto:       "",
+						},
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "Redis",
+							Description: "",
+							Technology:  "redis",
+							Proto:       "tcp",
+						},
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "MongoDB",
+							Description: "",
+							Technology:  "mongodb",
+							Proto:       "tcp",
+						},
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "Cassandra",
+							Description: "",
+							Technology:  "cassandra",
+							Proto:       "tcp",
+						},
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "ScyllaDB",
+							Description: "",
+							Technology:  "scylladb",
+							Proto:       "tcp",
+						},
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "Kafka",
+							Description: "",
+							Technology:  "kafka",
+							Proto:       "tcp",
+						},
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "RabbitMQ",
+							Description: "",
+							Technology:  "rabbitmq",
+							Proto:       "amqp",
+						},
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "NATS",
+							Description: "",
+							Technology:  "nats",
+							Proto:       "tcp",
+						},
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "Elasticsearch",
+							Description: "",
+							Technology:  "elasticsearch",
+							Proto:       "http",
+						},
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "Amazon S3",
+							Description: "",
+							Technology:  "aws-s3",
+							Proto:       "http",
+						},
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "Google Cloud Pub/Sub",
+							Description: "",
+							Technology:  "gcp-pubsub",
+							Proto:       "http",
+						},
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "Azure Blob Storage",
+							Description: "",
+							Technology:  "azure-blob-storage",
+							Proto:       "http",
+						},
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "etcd",
+							Description: "",
+							Technology:  "etcd",
+							Proto:       "grpc",
+						},
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "ClickHouse",
+							Description: "",
+							Technology:  "clickhouse",
+							Proto:       "tcp",
+						},
+					},
+				},
+			},
+			expectError: false,
 		},
 	}
 
@@ -171,7 +335,7 @@ func TestParse(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			parser := NewCommentParser()
-			result, err := parser.Parse(tt.dir, tt.recursive, false)
+			result, err := parser.Parse(tt.dir, tt.recursive, false, tt.analyzeGoMod)
 
 			if tt.expectError {
 				if err == nil {
@@ -471,7 +635,7 @@ description: Example service for exampling stuff.
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			parser := NewCommentParser()
-			parser.parseCommentGroup(tt.commentGroup)
+			parser.parseCommentGroup(tt.commentGroup, "test.go")
 
 			if !compareServices(parser.services, tt.expectedServices) {
 				t.Errorf("parseCommentGroup() services = %+v, want %+v", parser.services, tt.expectedServices)

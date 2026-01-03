@@ -90,6 +90,9 @@ servicefile parse --recursive
 
 # Specify output file
 servicefile parse --output my-service.yaml
+
+# Disable go.mod dependency inference
+servicefile parse --analyze-go-mod=false
 ```
 
 ### 3. Generated Output

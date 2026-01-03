@@ -17,13 +17,14 @@ func Parse() *cobra.Command {
 		recursive        bool
 		output           string
 		detectRepository bool
+		analyzeGoMod     bool
 	)
 
 	cmd := &cobra.Command{
 		Use:   "parse",
 		Short: "Parse servicefiles from source",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			return parseServiceFiles(dir, recursive, output, detectRepository)
+			return parseServiceFiles(dir, recursive, output, detectRepository, analyzeGoMod)
 		},
 	}
 
@@ -31,14 +32,15 @@ func Parse() *cobra.Command {
 	cmd.Flags().BoolVarP(&recursive, "recursive", "r", true, "Recursively analyze subdirectories")
 	cmd.Flags().StringVarP(&output, "output", "o", "servicefile.yaml", "Output file path suffix for YAML")
 	cmd.Flags().BoolVar(&detectRepository, "detect-repository", true, "Automatically detect repository URL from git")
+	cmd.Flags().BoolVar(&analyzeGoMod, "analyze-go-mod", true, "Analyze go.mod dependencies and infer relationships")
 
 	return cmd
 }
 
-func parseServiceFiles(dir string, recursive bool, output string, detectRepository bool) error {
+func parseServiceFiles(dir string, recursive bool, output string, detectRepository bool, analyzeGoMod bool) error {
 	parser := golang.NewCommentParser()
 
-	serviceFiles, err := parser.Parse(dir, recursive, detectRepository)
+	serviceFiles, err := parser.Parse(dir, recursive, detectRepository, analyzeGoMod)
 	if err != nil {
 		return fmt.Errorf("error parsing service file: %w", err)
 	}
