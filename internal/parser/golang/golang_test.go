@@ -358,7 +358,7 @@ func TestParse(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			parser := NewCommentParser()
+			parser := NewParser()
 			result, err := parser.Parse(tt.dir, tt.recursive, false, tt.analyzeGoMod)
 
 			if tt.expectError {
@@ -433,7 +433,7 @@ func TestParseFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			parser := NewCommentParser()
+			parser := NewParser()
 			err := parser.parseFile(tt.filePath)
 
 			if tt.expectError {
@@ -658,7 +658,7 @@ description: Example service for exampling stuff.
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			parser := NewCommentParser()
+			parser := NewParser()
 			parser.parseCommentGroup(tt.commentGroup, "test.go")
 
 			if !compareServices(parser.services, tt.expectedServices) {

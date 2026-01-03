@@ -38,7 +38,7 @@ func Generate() *cobra.Command {
 }
 
 func generateServiceFiles(dir string, recursive bool, output string, detectRepository bool, analyzeGoMod bool) error {
-	parser := golang.NewCommentParser()
+	parser := golang.NewParser()
 
 	serviceFiles, err := parser.Parse(dir, recursive, detectRepository, analyzeGoMod)
 	if err != nil {

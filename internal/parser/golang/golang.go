@@ -13,21 +13,21 @@ import (
 	"github.com/holydocs/servicefile/pkg/servicefile"
 )
 
-type CommentParser struct {
+type Parser struct {
 	services      []service
 	relationships []relationship
 	firstGoFile   string
 }
 
-func NewCommentParser() *CommentParser {
-	return &CommentParser{
+func NewParser() *Parser {
+	return &Parser{
 		services:      make([]service, 0),
 		relationships: make([]relationship, 0),
 		firstGoFile:   "",
 	}
 }
 
-func (cp *CommentParser) Parse(dir string, recursive bool, detectRepository bool, analyzeGoMod bool) ([]*servicefile.ServiceFile, error) {
+func (cp *Parser) Parse(dir string, recursive bool, detectRepository bool, analyzeGoMod bool) ([]*servicefile.ServiceFile, error) {
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return fmt.Errorf("failed to walk the path: %w", err)
@@ -119,7 +119,7 @@ func (r relationship) String() string {
 	)
 }
 
-func (cp *CommentParser) parseFile(path string) error {
+func (cp *Parser) parseFile(path string) error {
 	fset := token.NewFileSet()
 
 	f, err := parser.ParseFile(fset, path, nil, parser.ParseComments)
@@ -159,7 +159,7 @@ func (cp *CommentParser) parseFile(path string) error {
 	return nil
 }
 
-func (cp *CommentParser) parseCommentGroup(commentGroup string, definedIn string) {
+func (cp *Parser) parseCommentGroup(commentGroup string, definedIn string) {
 	if !strings.Contains(commentGroup, "service:") {
 		return
 	}
@@ -174,7 +174,7 @@ func (cp *CommentParser) parseCommentGroup(commentGroup string, definedIn string
 	}
 }
 
-func (cp *CommentParser) parseServiceDefinition(lines []string, definedIn string) {
+func (cp *Parser) parseServiceDefinition(lines []string, definedIn string) {
 	var s service
 
 	for _, line := range lines {
@@ -251,7 +251,7 @@ func (cp *CommentParser) parseServiceDefinition(lines []string, definedIn string
 	}
 }
 
-func (cp *CommentParser) parseRelationshipDefinition(lines []string, definedIn string) {
+func (cp *Parser) parseRelationshipDefinition(lines []string, definedIn string) {
 	var r relationship
 
 	for _, line := range lines {
@@ -323,7 +323,7 @@ func (cp *CommentParser) parseRelationshipDefinition(lines []string, definedIn s
 	}
 }
 
-func (cp *CommentParser) extractCommentText(line string) string {
+func (cp *Parser) extractCommentText(line string) string {
 	comment := strings.TrimSpace(line)
 	comment = strings.TrimPrefix(comment, "//")
 	comment = strings.TrimPrefix(comment, "/*")
@@ -335,7 +335,7 @@ func (cp *CommentParser) extractCommentText(line string) string {
 // Format: service:{service_name}:{action} [target_service] or service:{action} [target_service]
 // Example: service:database:uses PostgreSQL
 // Example: service:uses PostgreSQL
-func (cp *CommentParser) extractRelationshipInfo(comment string) (serviceName, action, targetName string) {
+func (cp *Parser) extractRelationshipInfo(comment string) (serviceName, action, targetName string) {
 	parts := strings.SplitN(comment, " ", 2)
 	serviceActionPart := parts[0]
 
@@ -357,7 +357,7 @@ func (cp *CommentParser) extractRelationshipInfo(comment string) (serviceName, a
 	return serviceName, action, targetName
 }
 
-func (cp *CommentParser) buildServiceFiles(rootDir string, detectRepository bool) ([]*servicefile.ServiceFile, error) {
+func (cp *Parser) buildServiceFiles(rootDir string, detectRepository bool) ([]*servicefile.ServiceFile, error) {
 	if err := cp.validateNoMixedUsage(); err != nil {
 		return nil, err
 	}
@@ -444,7 +444,7 @@ func (cp *CommentParser) buildServiceFiles(rootDir string, detectRepository bool
 	return result, nil
 }
 
-func (cp *CommentParser) buildDefaultServiceFile(rootDir string, detectRepository bool) (*servicefile.ServiceFile, error) {
+func (cp *Parser) buildDefaultServiceFile(rootDir string, detectRepository bool) (*servicefile.ServiceFile, error) {
 	// 1) Prefer git remote basename for service name when available
 	// 2) Otherwise fallback to current directory basename
 	name := ""
@@ -530,7 +530,7 @@ func basenameFromRepoURL(repoURL string) string {
 	return parts[len(parts)-1]
 }
 
-func (cp *CommentParser) validateNoMixedUsage() error {
+func (cp *Parser) validateNoMixedUsage() error {
 	var (
 		hasExplicit bool
 		hasImplicit bool
@@ -551,7 +551,7 @@ func (cp *CommentParser) validateNoMixedUsage() error {
 	return nil
 }
 
-func (cp *CommentParser) determineServiceName(r relationship, serviceFiles map[string]*servicefile.ServiceFile) (string, error) {
+func (cp *Parser) determineServiceName(r relationship, serviceFiles map[string]*servicefile.ServiceFile) (string, error) {
 	if r.serviceName != "" {
 		return r.serviceName, nil
 	}
@@ -572,7 +572,7 @@ func isEmptyRepository(serviceFiles []*servicefile.ServiceFile) bool {
 	return false
 }
 
-func (cp *CommentParser) fillRepository(dir string, serviceFiles []*servicefile.ServiceFile) error {
+func (cp *Parser) fillRepository(dir string, serviceFiles []*servicefile.ServiceFile) error {
 	repoURL, err := detectGitRepository(dir)
 	if err != nil {
 		fmt.Printf("Couldn't detect git repository: %v\n", err.Error())

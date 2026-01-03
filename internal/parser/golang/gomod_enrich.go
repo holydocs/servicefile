@@ -438,7 +438,7 @@ var inferredDependencies = []inferredDependency{
 	},
 }
 
-func (cp *CommentParser) enrichWithGoModDependencies(rootDir string, serviceFiles []*servicefile.ServiceFile) error {
+func (cp *Parser) enrichWithGoModDependencies(rootDir string, serviceFiles []*servicefile.ServiceFile) error {
 	serviceToSource := cp.serviceDefinedInByName()
 
 	rootAbs, err := filepath.Abs(rootDir)
@@ -494,7 +494,7 @@ func (cp *CommentParser) enrichWithGoModDependencies(rootDir string, serviceFile
 	return nil
 }
 
-func (cp *CommentParser) serviceDefinedInByName() map[string]string {
+func (cp *Parser) serviceDefinedInByName() map[string]string {
 	out := make(map[string]string)
 
 	for _, s := range cp.services {
