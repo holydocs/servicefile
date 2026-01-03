@@ -72,6 +72,30 @@ func TestParse(t *testing.T) {
 			expectedResult: []*servicefile.ServiceFile{},
 		},
 		{
+			name:         "parse directory with no service definitions (fallback name + go.mod inference)",
+			dir:          "testdata/noservice",
+			recursive:    true,
+			analyzeGoMod: true,
+			expectedResult: []*servicefile.ServiceFile{
+				{
+					Version: servicefile.Version,
+					Info: servicefile.Info{
+						Name: "servicefile",
+					},
+					Relationships: []servicefile.Relationship{
+						{
+							Action:      servicefile.RelationshipActionUses,
+							Participant: "PostgreSQL",
+							Description: "",
+							Technology:  "postgresql",
+							Proto:       "tcp",
+						},
+					},
+				},
+			},
+			expectError: false,
+		},
+		{
 			name:         "parse explicit service relationships",
 			dir:          "testdata/explicit",
 			recursive:    true,

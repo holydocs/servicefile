@@ -74,25 +74,25 @@ type WebServer struct {
 }
 ```
 
-### 2. Parse Your Service
+### 2. Generate Your ServiceFile
 
-Use the CLI tool to parse your Go code and generate a service file:
+Use the CLI tool to generate a service file from your Go code:
 
 ```bash
-# Parse current directory
-servicefile parse
+# Generate from current directory
+servicefile generate
 
-# Parse specific directory
-servicefile parse --dir ./my-service
+# Generate from specific directory
+servicefile generate --dir ./my-service
 
-# Parse recursively (default)
-servicefile parse --recursive
+# Generate recursively (default)
+servicefile generate --recursive
 
 # Specify output file
-servicefile parse --output my-service.yaml
+servicefile generate --output my-service.yaml
 
 # Disable go.mod dependency inference
-servicefile parse --analyze-go-mod=false
+servicefile generate --analyze-go-mod=false
 ```
 
 ### 3. Generated Output

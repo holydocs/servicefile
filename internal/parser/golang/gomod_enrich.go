@@ -452,6 +452,15 @@ func (cp *CommentParser) enrichWithGoModDependencies(rootDir string, serviceFile
 	for _, sf := range serviceFiles {
 		src, ok := serviceToSource[sf.Info.Name]
 		if !ok || strings.TrimSpace(src) == "" {
+			// If service was generated without explicit `service:name`, fall back to the first parsed Go file.
+			if strings.TrimSpace(cp.firstGoFile) != "" {
+				src = cp.firstGoFile
+			} else {
+				continue
+			}
+		}
+
+		if strings.TrimSpace(src) == "" {
 			continue
 		}
 

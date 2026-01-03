@@ -16,12 +16,14 @@ import (
 type CommentParser struct {
 	services      []service
 	relationships []relationship
+	firstGoFile   string
 }
 
 func NewCommentParser() *CommentParser {
 	return &CommentParser{
 		services:      make([]service, 0),
 		relationships: make([]relationship, 0),
+		firstGoFile:   "",
 	}
 }
 
@@ -43,6 +45,10 @@ func (cp *CommentParser) Parse(dir string, recursive bool, detectRepository bool
 			return nil
 		}
 
+		if cp.firstGoFile == "" {
+			cp.firstGoFile = path
+		}
+
 		if err := cp.parseFile(path); err != nil {
 			return fmt.Errorf("failed to parse %s: %w", path, err)
 		}
@@ -54,7 +60,11 @@ func (cp *CommentParser) Parse(dir string, recursive bool, detectRepository bool
 		return nil, fmt.Errorf("error walking the path: %w", err)
 	}
 
-	serviceFiles, err := cp.buildServiceFiles()
+	if strings.TrimSpace(cp.firstGoFile) == "" {
+		return nil, fmt.Errorf("no go files found")
+	}
+
+	serviceFiles, err := cp.buildServiceFiles(dir, detectRepository)
 	if err != nil {
 		return nil, err
 	}
@@ -347,7 +357,7 @@ func (cp *CommentParser) extractRelationshipInfo(comment string) (serviceName, a
 	return serviceName, action, targetName
 }
 
-func (cp *CommentParser) buildServiceFiles() ([]*servicefile.ServiceFile, error) {
+func (cp *CommentParser) buildServiceFiles(rootDir string, detectRepository bool) ([]*servicefile.ServiceFile, error) {
 	if err := cp.validateNoMixedUsage(); err != nil {
 		return nil, err
 	}
@@ -418,7 +428,11 @@ func (cp *CommentParser) buildServiceFiles() ([]*servicefile.ServiceFile, error)
 	}
 
 	if len(serviceFiles) == 0 {
-		return nil, fmt.Errorf("no services found")
+		sf, err := cp.buildDefaultServiceFile(rootDir, detectRepository)
+		if err != nil {
+			return nil, err
+		}
+		return []*servicefile.ServiceFile{sf}, nil
 	}
 
 	result := make([]*servicefile.ServiceFile, 0, len(serviceFiles))
@@ -428,6 +442,92 @@ func (cp *CommentParser) buildServiceFiles() ([]*servicefile.ServiceFile, error)
 	}
 
 	return result, nil
+}
+
+func (cp *CommentParser) buildDefaultServiceFile(rootDir string, detectRepository bool) (*servicefile.ServiceFile, error) {
+	// 1) Prefer git remote basename for service name when available
+	// 2) Otherwise fallback to current directory basename
+	name := ""
+	repoURL := ""
+
+	url, err := detectGitRepository(rootDir)
+	if err == nil && strings.TrimSpace(url) != "" {
+		repoURL = url
+		if base := basenameFromRepoURL(url); base != "" {
+			name = base
+		}
+	}
+
+	if name == "" {
+		abs, absErr := filepath.Abs(rootDir)
+		if absErr != nil {
+			// Best-effort fallback
+			name = filepath.Base(rootDir)
+		} else {
+			name = filepath.Base(abs)
+		}
+	}
+
+	sf := &servicefile.ServiceFile{
+		Version: servicefile.Version,
+		Info: servicefile.Info{
+			Name: name,
+		},
+		Relationships: []servicefile.Relationship{},
+	}
+
+	if detectRepository && repoURL != "" {
+		sf.Info.Repository = repoURL
+	}
+
+	// If we parsed any relationship blocks without a service definition, attach them to the default service.
+	for _, r := range cp.relationships {
+		if r.serviceName != "" && r.serviceName != name {
+			// Explicitly named relationships belong to another service; keep behavior strict.
+			continue
+		}
+
+		rel := servicefile.Relationship{
+			Action:      servicefile.RelationshipAction(r.action),
+			Participant: r.targetName,
+		}
+		if r.technology != "" {
+			rel.Technology = r.technology
+		}
+		if r.description != "" {
+			rel.Description = r.description
+		}
+		if r.proto != "" {
+			rel.Proto = r.proto
+		}
+		if len(r.tags) > 0 {
+			rel.Tags = r.tags
+		}
+		if r.external {
+			rel.External = r.external
+		}
+		if r.person {
+			rel.Person = r.person
+		}
+
+		sf.Relationships = append(sf.Relationships, rel)
+	}
+
+	sf.Sort()
+	return sf, nil
+}
+
+func basenameFromRepoURL(repoURL string) string {
+	u := strings.TrimSpace(repoURL)
+	u = strings.TrimSuffix(u, "/")
+	if u == "" {
+		return ""
+	}
+	parts := strings.Split(u, "/")
+	if len(parts) == 0 {
+		return ""
+	}
+	return parts[len(parts)-1]
 }
 
 func (cp *CommentParser) validateNoMixedUsage() error {

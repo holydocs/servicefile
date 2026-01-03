@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func Parse() *cobra.Command {
+func Generate() *cobra.Command {
 	var (
 		dir              string
 		recursive        bool
@@ -21,10 +21,10 @@ func Parse() *cobra.Command {
 	)
 
 	cmd := &cobra.Command{
-		Use:   "parse",
-		Short: "Parse servicefiles from source",
+		Use:   "generate",
+		Short: "Generate servicefiles from source",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			return parseServiceFiles(dir, recursive, output, detectRepository, analyzeGoMod)
+			return generateServiceFiles(dir, recursive, output, detectRepository, analyzeGoMod)
 		},
 	}
 
@@ -37,7 +37,7 @@ func Parse() *cobra.Command {
 	return cmd
 }
 
-func parseServiceFiles(dir string, recursive bool, output string, detectRepository bool, analyzeGoMod bool) error {
+func generateServiceFiles(dir string, recursive bool, output string, detectRepository bool, analyzeGoMod bool) error {
 	parser := golang.NewCommentParser()
 
 	serviceFiles, err := parser.Parse(dir, recursive, detectRepository, analyzeGoMod)

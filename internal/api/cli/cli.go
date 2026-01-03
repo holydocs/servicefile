@@ -11,7 +11,7 @@ func Command() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		commands.Parse(),
+		commands.Generate(),
 	)
 
 	return cmd
